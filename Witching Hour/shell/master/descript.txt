@@ -1,0 +1,29 @@
+charset,UTF-8
+type,shell
+
+name,Lily
+craftman,Zdzisiu
+craftmanurl,
+
+seriko.use_self_alpha,1
+
+seriko.alignmenttodesktop,free
+
+//kero.bindgroup0.name,Crystal,Diamond
+kero.bindgroup1.name,Cauldron,Copper
+kero.bindgroup2.name,Cauldron,Iron
+kero.bindgroup3.name,Cauldron,Gold
+kero.bindgroup4.name,Cauldron,Obsidian
+
+char2.bindgroup3.name,Bottle,Regular
+char2.bindgroup4.name,Bottle,Crystal
+char2.bindgroup5.name,Bottle,Heart
+char2.bindgroup6.name,Bottle,Diamond
+char2.bindgroup7.name,Bottle,Star
+char2.bindgroup3.default,1
+
+char2.bindgroup10.name,Decoration,Crystal
+char2.bindgroup11.name,Decoration,Crow Skull
+char2.bindgroup12.name,Decoration,Picture Frame
+char2.bindgroup13.name,Decoration,Skull
+char2.bindgroup10.default,1

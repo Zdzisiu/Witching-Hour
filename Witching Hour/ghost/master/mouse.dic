@@ -1,0 +1,391 @@
+//Separate from the menus because you could put other interactions here, like poking or booping or punching or asking about various hotspots
+OnMouseDoubleClick
+{
+	if reference5 == 0 //reference5 is the mouse button being clicked, in this case a left click
+	{
+		//reference3 is which character is being clicked
+		//If you want to add double click interactions, reference4 will be the name of the hitbox the mouse is over
+		if reference3 == 0
+		{
+			OnSakuraMenu
+			//OnDebug
+		}
+		elseif reference3 == 2
+		{
+			if reference4 == "bottle"; OnBottleMenu
+			elseif reference4 == "crystal_ball"; OnBallMenu
+			elseif reference4 == "grimoire"; OnBookMenu
+			elseif reference4 == "bag"; OnBagMenu
+			elseif reference4 == "decoration"; OnDecoration
+		}
+		elseif reference3 == 3
+		{
+			//OnBottleMenu(reference4)
+		}
+		elseif reference3 >= 5
+		{
+			_name = entity[reference3]
+			if "Potion" !_in_ _name && "Bottle" !_in_ _name
+			{
+				_entityIndex = ASEARCH(_name,ingrName)
+				entityCount--
+				entity[reference3] = ""
+				--
+				"\p[%(reference3)]\s[-1]\1*"
+				--
+				if nameFound[_entityIndex] == 1
+				{
+					" One '%(_name)'"
+					if bag[_entityIndex] > 0; "Another '%(_name)'"
+				}
+				else
+				{
+					" One ingredient"
+					if TOINT(ARRAYADD(bag)) > 0; "Another ingredient"
+				}
+				--
+				if bagIngr[_entityIndex] == ""; bagIngr[_entityIndex] = 0
+				bagIngr[_entityIndex] = TOINT(bagIngr[_entityIndex])
+				bagIngr[_entityIndex]++
+				--
+				" added to your bag"
+				" dropped into the depths of your bag"
+				" thrown stright into the dark void of your bag"
+				--
+				if ingrUserName[_entityIndex] == "" || ingrUserName[_entityIndex] == "?????"
+				{
+					ingFoundNum++
+					"\x\p[%(reference3)]What do you want to call this ingredient?\![open,inputbox,OningredientUserName,--reference=%(_entityIndex),--timeout=0]"
+				}
+			}
+			elseif "Bottle" _in_ _name
+			{
+				"\p[%(reference3)]\s[-1]"
+				entityCount--
+				entity[reference3] = ""
+			}
+			elseif "Potion" _in_ _name
+			{
+				"\p[%(reference3)]\s[-1]"
+				_entityIndex = ASEARCH(_name,potName)
+				entityCount--
+				entity[reference3] = ""
+
+				if Buttons[3] == "ON" && potName[_entityIndex] == "Failed Potion"
+ 				{
+
+				}
+				else
+				{
+					if bagPotions[_entityIndex] == ""; bagPotions[_entityIndex] = 0
+					bagPotions[_entityIndex]++
+				}
+
+			}
+		}
+	}
+}
+
+OnDecoration
+{
+	if curDec == "Crystal"
+	{
+		"\p[2]* Choose a color\![open,dialog,color,--id=OnColor]"
+	}
+}
+
+OnColor
+{
+	_temp = REPLACE(reference2,",","||")
+	"\![raise,OnGenColor,color,a,%(_temp)]\_q" 
+}
+
+OnGenColor
+{
+	_colorFolder = "..\..\shell\master\colors\" 
+	_path = "..\..\shell\master\" 
+	_temp = REPLACE(reference2,"||",",")
+	_colorRGB = SPLIT(_temp,",")
+	--
+	_i = FUNCTIONEX("Saori/proxy_ex.dll","Saori/color.exe","color","222","364",_colorRGB[0],_colorRGB[1],_colorRGB[2],"255",_colorFolder+reference0)
+	--
+	_i = FUNCTIONEX("Saori/proxy_ex.dll","Saori/color.exe","overlayfast_merge",(_path + "surface131.png"),(_colorFolder + "color.png"),_path+"surface131")
+	--
+	"\![reload,shell]" //reload the shell to see results
+	--
+	OnRestore
+}
+
+OnColorTypeCategory
+{
+	color_type_category = reference0 //change the color type category to the selected one
+	--
+	OnVariations
+}
+
+
+OnColorCategory
+{
+	color_category = reference0 //change the color category to the selected one
+	--
+	OnVariations
+}
+
+OningredientUserName
+{
+	_index = TOINT(reference2)
+	if reference0 != ""; ingrUserName[_index] = reference0
+	else; ingrUserName[_index] = "ingredient Nr" + NoEmptyARRAYSIZE(ingrUserName)
+	--
+	if SHIORI3FW.Eventid == "OnMouseDoubleClick"; "\1* A new page is added to your grimoire"
+	else; "\![raise,OningredientPage,%(_index)]"
+}
+
+OnMouseClick
+{
+	if reference5 == 0
+	{
+		if reference3 == 2 && reference4 == "Bottle"
+		{
+			if entityCount < 5; entityCount = 5
+			else; entityCount++
+			--
+			if bottleSurface == ""; bottleSurface = 2000
+			entity[entityCount] = "Bottle"
+			entitySurface[entityCount] = bottleSurface
+			--
+			"\p[%(entityCount)]\![move,--X=-50,--Y=0,--time=0,--base=2]\p[%(entityCount)]\s[%(entitySurface[entityCount])]\e"
+		}
+		elseif reference3 == 1 && reference4 == "laddle"
+		{
+			OnFinishPotion
+		}
+	}
+}
+
+OnMouseMove
+{
+	if reference4 != ""
+	{
+		stroke++
+		
+		if stroke % 40 == 0
+		{
+			if reference3 == 0; OnMouseMove.Sakura
+			else; OnMouseMove.Kero
+		}
+	}
+}
+
+OnMouseMove.Sakura
+{
+	if reference4 == "head"
+	{
+		"\0\s[0]Petting??"
+	}
+}
+
+OnMouseMove.Kero
+{
+	if reference4 == "head"
+	{
+		"\1\s[10]Petting..."
+	}
+}
+
+OnMouseLeaveAll
+{
+	stroke = 0
+}
+
+OnMouseDragEnd
+{
+
+}
+
+OnOverlap : all
+{
+	_t = REPLACE(reference0,C_BYTE1,"||")
+	_splitAll = SPLIT(_t,"||")
+
+	for _i = 0,_split="",_temp = "",_name = "",_entityIndex = 0; _i < ARRAYSIZE(_splitAll);_i++,_temp = "",_name = "",_entityIndex = 0
+	{
+		_split = SPLIT(_splitAll[_i],"-")
+		--
+		if _split[1] != "2" && _split[0] != "2" && _split[1] != "0" && _split[0] != "0"
+		{
+			if _split[0] == "1" || _split[1] == "1"
+			{
+				if _split[0] == "1"
+				{
+					_name = entity[TOINT(_split[1])]
+					_temp = TOINT(_split[1])
+				}
+				else
+				{
+					_name = entity[TOINT(_split[0])]
+					_temp = TOINT(_split[1])
+				}
+				--
+				if "Potion" !_in_ _name && "Bottle" !_in_ _name
+				{
+					if cauldronIngrCount != 3
+					{
+						_entityIndex = ASEARCH(_name,ingrName)
+						entityCount--
+						entity[_temp] = ""
+						entitySurface[_temp] = ""
+						--
+						"\p[%(_temp)]\s[-1]\1\s[10]\i[22]* %(waterSound)!"
+						--
+						if cauldronIngrCount == 0
+						{
+							cauldronIngr[0] = ingrCategory[_entityIndex]
+							cauldronIngrCount++
+						}
+						elseif cauldronIngrCount == 1
+						{
+							cauldronIngr[1] = ingrElement[_entityIndex]
+							cauldronIngrCount++
+						}
+						elseif cauldronIngrCount == 2
+						{
+							cauldronIngr[2] = ingrOrigin[_entityIndex]
+							cauldronIngrCount++
+						}
+						
+					}
+					else
+					{
+						"* You already added 3 ingredients "
+					}
+				}
+				elseif "Bottle" _in_ _name
+				{
+					if cauldronIngrCount != 3
+					{
+						"* You didn't add all the ingredients "
+					}
+					elseif stirred != 1
+					{
+						"* You didn't stir the potion "
+					}
+					else
+					{
+						stirred = 0
+						cauldronIngrCount = 0
+						cauldronIngr = ("","","")
+						entity[_temp] = caulPotion
+						_entityIndex = ASEARCH(caulPotion,potName)
+						caulPotion = ""
+						if potUserName[_entityIndex] == ""; potUserName[_entityIndex] = "Potion Nr." + NoEmptyARRAYSIZE(potUserName)
+						--
+						"\p[%(_temp)]\s[%(entitySurface[_temp])]\i[0]* Potion Ready!"
+						--
+						if Buttons[2] == "ON"; "\n\n[half]This potion failed"
+						
+					}
+				}
+			}
+		}
+		elseif _split[0] == "0" || _split[1] == "0"
+		{
+			if _split[0] == "0"
+			{
+				_name = entity[TOINT(_split[1])]
+				_temp = TOINT(_split[1])
+			}
+			else
+			{
+				_name = entity[TOINT(_split[0])]
+				_temp = TOINT(_split[1])
+			}
+			--
+			if "Potion" _in_ _name
+			{
+				if potionTime == 0 || _name == "Clearing Potion"
+				{
+					entityCount--
+					entity[_temp] = ""
+					WitchStatus = _name
+					--
+					"\p[%(_temp)]\s[-1]\0\s[0]\i[501,wait]"
+					--
+					OnPotionEffects
+				}
+				else
+				{
+					"\1* You can only apply one potion at a time"
+				}
+			}
+		}
+		//--
+		//reference0
+	}
+}
+
+
+OnOtherOverlap
+{
+	//if potion overlap with ghost, send potion name
+}
+
+OnPotionEffects : all
+{
+	timers[1] = 0
+	if WitchStatus == "Clearing Potion";
+	{
+		potionTime = 0
+		WitchStatus = "None"
+	}
+	elseif WitchStatus == "Failed Potion";
+	{
+		potionTime = 0
+	}
+	else
+	{
+		potionTime = RAND(PaceSetting[4]-PaceSetting[3]+1) + PaceSetting[3]
+	}
+	--
+	"\0\s[0]\i[501,wait]"
+	--
+	_scale = TOINT(nowscale)
+	if WitchStatus == "Small Potion"; _scale -= 50 //\s[0]\i[501,wait]
+	elseif WitchStatus == "Big Potion"; _scale += 50
+	elseif WitchStatus == "Reverse Gravity Potion"; _scale *= -1
+	--
+	if WitchStatus == "Reverse Gravity Potion"; "\0\![set,alignmenttodesktop,top]\![set,scaling,%(_scale)]"
+	else; "\0\![set,alignmenttodesktop,bottom]\![set,alignmenttodesktop,free]"
+	--
+	if WitchStatus == "Frog Potion"; "\0\s[5004]\i[1000]"
+	elseif WitchStatus == "Dog Potion"; "\0\s[5000]\i[1000]"
+	elseif WitchStatus == "Cat Potion"; "\0\s[5001]\i[1000]"
+	elseif WitchStatus == "Fox Potion"; "\0\s[5002]\i[1000]"
+	elseif WitchStatus == "Rabbit Potion"; "\0\s[5003]\i[1000]"
+	elseif WitchStatus == "Vampire Potion"; "\0\s[5005]\i[1000]"
+	elseif WitchStatus == "Werewolf Potion"; "\0\s[5006]\i[1000]"
+	elseif WitchStatus == "Skeleton Potion"; "\0\s[5007]\i[1000]"
+	elseif WitchStatus == "Clown Potion"; "\0\s[5008]\i[1000]"
+	elseif WitchStatus == "Zombie Potion"; "\0\s[5009]\i[1000]"
+	elseif WitchStatus == "Ghost Potion"; "\0\s[5010]\i[1000]"
+	elseif WitchStatus == "Slime Potion"; "\0\s[5011]\i[1000]"
+	elseif WitchStatus == "Plant Potion"; "\0\s[5004]\i[1000]"
+	elseif WitchStatus == "Mer Potion"; "\0\s[5012]\i[1000]"
+	elseif WitchStatus == "Anima Potion"; "\0\s[5004]\i[1000]"
+	elseif WitchStatus == "Demon Potion"; "\0\s[5013]\i[1000]"
+	elseif WitchStatus == "Angel Potion"; "\0\s[5014]\i[1000]"
+	elseif WitchStatus == "Rain Potion"; "\0\s[0]\i[1001,wait]\w7\i[1003]"
+	elseif WitchStatus == "Freezing Potion"; "\0\s[5016]\i[1000]"
+	elseif WitchStatus == "Rain Potion"; "\0\s[0]\i[1000]"
+	elseif WitchStatus == "Rainbow Potion"; "\0\s[5015]\i[1000]"
+	elseif WitchStatus == "Sleep Potion"; "\0\s[5017]\i[1000]"
+	elseif WitchStatus == "Invisibility Potion"; "\0\i[1000,wait]\s[-1]"
+	elseif WitchStatus == "Money Potion"; "\0\s[0]\i[1000]"
+	elseif WitchStatus == "Strength Potion"; "\0\s[5018]\i[1000]"
+	elseif WitchStatus == "Hiccups Potion"; "\0\s[0]\i[1000]"
+	elseif WitchStatus == "Confetti Potion"; "\0\s[0]\i[1000]"
+	elseif WitchStatus == "Failed Potion"; "\0\s[0]Seems Like I was right"
+	else; "\0\s[0]\i[1000,wait][neutral]"
+	--
+	"\![set,scaling,%(_scale)]"
+}

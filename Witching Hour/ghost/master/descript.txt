@@ -1,0 +1,16 @@
+charset,UTF-8
+
+name,Witching Hour
+type,ghost
+
+shiori,yaya.dll
+
+craftman,Zdzisiu
+craftmanurl,
+
+sakura.name,Witch Apprentice
+kero.name,Caludron
+
+icon,icon.ico
+
+sstp.allowunspecifiedsend,0

@@ -1,0 +1,5 @@
+charset,UTF-8
+type,ghost
+
+name,Witching Hour
+directory,witching_hour

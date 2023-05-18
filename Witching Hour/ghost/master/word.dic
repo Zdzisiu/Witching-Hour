@@ -1,0 +1,577 @@
+//Envelopes/word lists can be so much more than a simple basic list! Here's an example to make you think outside the box a little. To be used with dialogues like:
+//"I spent like 3 hours at the store the other day, looking for a shirt in %(favoredcolors). I found everything but, can you believe it?"
+//It gets fun because if it's a more mundane color, it's absurd they didn't have it. If it's one of the longer entries here though, why were you looking for that!! That's so oddly specific. But more generally, the kinds of things you add and the kinds of things you leave out can say a TON about a character. Like, this envelope here only has blues and grays. But maybe it could only have soft colors, or only very bold colors! Maybe all the entries are very clinical, or maybe they're long and rambly. Envelopes can say SO much about your character, have fun with them!
+/*
+favoredcolors
+{
+	"baby blue"
+	"cerulean"
+	"mint"
+	"misty gray"
+	"soft blue"
+	"ocean blue"
+	"navy blue"
+	"slate"
+	"aqua"
+	"a blue so rich you could get lost in it for hours"
+	"the very same blue of the dress my mother used to wear every sunday"
+	"a soft blue with hints of green"
+	"an electrifying blue that takes your breath away"
+	"a bold and undeniable blue"
+	"a blue often mistaken for purple"
+	"the kind of blue that makes you sad"
+	"a gray that helps you blend into the crowd"
+	"the grayest gray possible"
+	"a gray so gray you can only see gray for days afterwards"
+}
+*/
+
+//And if you're not interested in making word lists like this at all, you can just remove this whole file! Or use it for something else, you do you
+
+//Use this function by using it in a dialogue or your code
+//Code: ARRAYADD('1,2,3,4') || ARRAYADD(array) 
+//Dialogue: %(ARRAYADD('1,2,3,4')) || %(ARRAYADD(array))
+ARRAYADD //ARRAYADD(array)
+{
+	_return = 0
+
+	if _argc == 1
+    {
+		_a = SPLIT(_argv[0],",") //split array
+		--
+		for _i=0;_i<ARRAYSIZE(_a);_i++
+		{
+			_return += TOINT(_a[_i]) //add the numbers
+		}
+	}
+	else
+	{
+		for _i=0;_i<_argc;_i++
+		{
+			_return += TOINT(_argv[_i]) //add the numbers
+		}
+	}
+	_return
+}
+
+TOPROPER
+{
+    _word = _argv[0]
+    _letter = TOUPPER(SUBSTR(_word,0,1))
+    _word = SUBSTR(_word,1,STRLEN(_word)-1)
+    _letter + _word
+}
+
+
+//Use this function by using it in a dialogue or your code
+//Code: CENSOR("word") || CENSOR(envelope)
+//Dialogue: %(CENSOR("word")) || %(CENSOR('word')) || %(CENSOR(envelope))
+
+CENSOR //CENSOR(string)
+{
+    _word = SPLIT(_argv[0]," ") //replace spaces with commas
+    _arlen = ARRAYSIZE(_word) //check how many words are to censor
+    _censor = "\![no-markdown]"
+    _print = ""
+    --
+    for _i=0;_i<_arlen;_i++ //loop working till i is the size og _arleng
+    {
+        _buffer = SUBSTR(_word[_i],0,1) //take the first letter
+        _len = STRLEN(_word[_i]) //check how many letters there are
+        --
+        for _j=1;_j<_len;_j++ //loop to add one * for one letter of a word
+        {
+            _censor[_i] += "*" 
+        }
+        --
+        _censor[_i] = INSERT(_censor[_i],0,_buffer) //add the saved letter to the begining
+    }
+    --
+    for _i=0;_i<ARRAYSIZE(_censor);_i++ //loop to add the words back together
+    {
+        _print += _censor[_i] + "  "
+    }
+    --
+    _print //show the censored words
+}
+
+
+/*
+    This function generates a random "word" which is just a string of letters with some rules
+
+    Arguments:
+    0: Min: Minimum amount of letters/sylabs
+    1: Max: Max amount of letters sylabs
+    2: alphabet/sylabs/both/custom: Which set to use (sylabs also includes vowels by themselves)
+    3: nonletter use 1/0 (')
+    4: Rule 1: Only one ' 1/0 
+    5: Rule 2: Don't repeat letters next to eachother 1/0 
+    6: Rule 3: Phonetic conditions 1/0 
+    7: if Rule 3 on: phonetic difference [1-10] (more than 10 can be used but I don't recommend it)
+
+	What are phonetic conditions?
+	Phonetic conditions basically check if two letters besides eachother are too close to each other in the character set and chooses a different, further letter
+	Don't think to much about it, just generate 5 words with one phonetic difference and see if it fits your needs, if you don't like how the words look, change the phonetic difference, basically just test around
+
+    Default values (if left an argument is left empty):
+    FakeWord(2,10,'alphabet',0,0,0,0)
+
+    IMPORTANT:
+    If you use sylabs rememeber that one sylab is counted like one character:
+    FakeWord(4,5,'sylabs',1,1,1,1,1) - max would be actually 10 characters
+    FakeWord(4,15,'sylabs',1,1,1,1,1) - max would be actually 30 characters
+
+*/
+FakeWord //FakeWord(min,max,alphabet/sylabs/both/custom,nonletters 1/0,rule 1: 1/0,rule 2: 1/0,rule 3: 1/0)
+{
+	_word = ""
+    _alphabet = "a b c d e f g h i j k l m n o p r s t u w x y z" // basic alphabet
+    //sylabs = letters from alphabets + vowel and vowels by themselves
+    _sylabs = "ba ca da fa ga ha ja ka la ma na pa ra sa ta va wa qa xa ya za be ce de fe ge he je ke le me ne pe re se te ve we qe xe ye ze bi ci di fi gi hi ji ki li mi ni pi ri si ti vi wi qi xi yi zi bo co do fo go ho jo ko lo mo no po ro so to vo wo qo xo yo zo bu cu du fu gu hu ju ku lu mu nu pu ru su tu vu wu qu xu yu zu a e i j o u"
+	//custom: you only want certain letters/sylabs/whatever but don't want to change default alphabet and sylabs? use custom, separate everything with a space
+    _custom = "xa xi xe xo va vi ve vo th st cz"
+    _nonLetters = "'"
+    _temp = ""
+    _num = 0
+    _newLetter = ""
+	_lettersOnly = IARRAY
+	_alphabetTemp = IARRAY
+	_letterprev = ""
+	_use = IARRAY
+    --
+    _min = TOINT(_argv[0])
+    _max = TOINT(_argv[1])
+    --
+    if _min == 0; _min = 2
+    --
+    if _max == 0; _max = 10
+    elseif _max < _min; _max = _min + 1
+    --
+    if _argv[2] == "alphabet"; _temp = _alphabet
+    elseif _argv[2] == "sylabs"; _temp = _sylabs
+    elseif _argv[2] == "both"; _temp = _alphabet + " " + _sylabs
+    elseif _argv[2] == "custom"; _temp = _custom
+    else; _temp = _alphabet
+    --
+	if TOINT(_argv[7]) == 0; _phNum = 1
+	else; _phNum = TOINT(_argv[7])
+	--
+	_lettersOnly = SPLIT(_temp," ")
+	--
+    if _argv[3] == "1" || _argv[3] == 1; _temp += " " + _nonLetters
+    --
+    _alphabetTemp = SPLIT(_temp," ")
+    --
+    _letters = RAND(ARRAYSIZE(_alphabetTemp))//how many letters/sylabs are there in the array?
+	--
+	_num = RAND(_max)+1
+	--
+	if _num < _min; _num = _min
+	--
+	for _j = 0; _j < _num; _j++
+	{
+		if _argv[6] == "1" || _argv[6] == 1 || (_j != 0 && _j != _num)
+		{
+			for _x = 0; _x <= _phNum; _x++
+			{
+				_newLetter = RAND(ARRAYSIZE(_alphabetTemp))
+				--
+				if _newLetter == _letters
+				{
+					if RAND(2) == 1
+					{
+						if _alphabetTemp[_letters - _newLetter] == ""; _letters = RAND(ARRAYSIZE(_alphabetTemp))
+						else; _letters += _x - _newLetter
+					}
+					else
+					{
+						if _alphabetTemp[_letters + _newLetter] == ""; _letters = RAND(ARRAYSIZE(_alphabetTemp))
+						else; _letters += _x + _newLetter
+					}
+				}
+				elseif _letterprev == _alphabetTemp[_letters + _x]
+				{
+					if RAND(2) == 1
+					{
+						if _alphabetTemp[_letters - _newLetter] == ""; _letters = RAND(ARRAYSIZE(_alphabetTemp))
+						else; _letters += _x - _newLetter
+					}
+					else
+					{
+						if _alphabetTemp[_letters+_newLetter] == ""; _letters = RAND(ARRAYSIZE(_alphabetTemp))
+						else; _letters += _x + _newLetter
+					}
+				}
+				elseif _letterprev == _alphabetTemp[_letters - _x]
+				{
+					if RAND(2) == 1
+					{
+						if _alphabetTemp[_letters-_newLetter] == ""; _letters = RAND(ARRAYSIZE(_alphabetTemp))
+						else; _letters += _x-_newLetter
+					}
+					else
+					{
+						if _alphabetTemp[_letters+_newLetter] == ""; _letters = RAND(ARRAYSIZE(_alphabetTemp))
+						else; _letters += _x+_newLetter
+					}
+				}
+			}
+		}
+		--
+		if _argv[5] == "1" || _argv[5] == 1
+		{
+			for _i = 0; _alphabetTemp[_letters] == _letterprev; _i++
+			{
+				if _alphabetTemp[_letters] == _letterprev; _letters = RAND(ARRAYSIZE(_alphabetTemp))
+				else; break
+			}
+		}
+		--
+		if _argv[4] == "1" || _argv[4] == 1
+		{
+			if "'" _in_ _word && "'" _in_ _alphabetTemp[_letters]
+			{
+				_letters = RAND(ARRAYSIZE(_lettersOnly))
+				_word = REPLACE(_word,"'",_lettersOnly[_letters])
+			}
+		}
+		--
+		if _letterprev == "'" && _alphabetTemp[_letters] == "'"
+		{
+			_letters = RAND(ARRAYSIZE(_lettersOnly))
+			_word += _lettersOnly[_letters]
+			_letterprev = _lettersOnly[_letters]
+		}
+		else
+		{
+			_word += _alphabetTemp[_letters]
+			_letterprev = _alphabetTemp[_letters]
+		}
+	}
+	--
+	_buffer = SUBSTR(_word,0,1)
+	_word = ERASE(_word,0,1)
+	_word = INSERT(_word,0,TOUPPER(_buffer))
+	--
+	_word
+	//Debug: 
+	//"%(_word)\nMin: %(_min) | Max: %(_max) | Num: %(_num)"
+}
+
+//USE:
+//OWO(sentence)
+
+OWO 
+{
+	_word = SPLIT(_argv[0]," ") //get the sentence and split it into words
+	//Initialize the variables
+	_debug = ""
+	_owo = IARRAY
+	_chr = IARRAY
+	_strlng = 0
+	_vow = ("o","a","e","i") //vowels
+	--
+	if RAND(10) == 1; _owo ,= "%(pre_owo)" //if random number == 1 add something from the envelope
+	--
+	for _i=0;_i<ARRAYSIZE(_word);_i++
+	{
+		_word[_i] = RE_REPLACE(_word[_i],"(r|l)","w") //replace all 'r' and 'l' with 'w'
+		_word[_i] = RE_REPLACE(_word[_i],"(R|L)","W") //replace all 'R' and 'L' with 'W'
+		--
+		for _j=0;_j<4;_j++ //loop to get all vowels
+		{
+			_word[_i] = REPLACE(_word[_i],"n"+_vow[_j],"ny"+_vow[_j]) //replace all 'no'|'ne'|'ni'|'na' with 'nyo'|'nye'|'nyi'|'nya'
+			_word[_i] = REPLACE(_word[_i],"N"+_vow[_j],"Ny"+_vow[_j]) //replace 'No'|'Ne'|'Ni'|'Na' with 'Nyo'|'Nye'|'Nyi'|'Nya'
+		}
+		--
+		_chr = CHARSPLIT(_word[_i]) //split the word into single characters in an array
+		_strlng = STRLEN(_word[_i]) //get the lenght of the word
+		--
+		if RAND(10) == 1; _owo ,= _chr[0] + "-" + _word[_i]  //if random number == 1 add a 'stutter' (repeat the first letter with an -)
+		else; _owo ,= _word[_i]   //else just add the word to _owo array
+		--
+		if _chr[_strlng-1] == "y" //if the last letter == 'y' repeat the word but the first letter is 'w'
+		{
+			_chr[0] = "w" //make the first letter w
+			_owo ,= REPLACE("%(_chr)",",","") //add to _owo envelope as one word
+		}
+		--
+		_debug += "%(_chr)" + " : " +  _chr[_strlng-1] + " | "
+	}
+	--
+	if RAND(10) == 3; _owo ,= "%(suf_owo)" //if random number == 1 add something from the envelope
+	--
+	REPLACE("%(_owo)",","," ") //return the sentence
+	//_debug
+}
+
+pre_owo : nonoverlap
+{
+	"OwO"
+	"UwU"
+	"hehe"
+	"*nuzzles*"
+	"*giggles*"
+}
+
+suf_owo : nonoverlap
+{
+	":3"
+	">:3"
+	"xox"
+	">3<"
+	"UwU"
+	"OwO"
+	"hehe~"
+	"ɾ⚈▿⚈ɹ"
+	"(・ω・)"
+	"(ᗒᗨᗕ)"
+	"(*≧▽≦)"
+	"( ﾟ∀ ﾟ)"
+	"( ・ ̫・)"
+
+}
+
+//USE:
+//CHARSPLIT('word') will return 'w,o,r,d'
+CHARSPLIT
+{
+    _char = IARRAY //declare an array
+    _strlen = STRLEN(_argv[0]) //get how many letters the word has
+    for _i=0;_i<_strlen;_i++
+    {
+        _char ,= SUBSTR(_argv[0],_i,1)//get the [_i] letter from the word and save it into an array
+	}
+    --
+    _char //display the array
+}
+
+Wobble
+{
+	_str = SPLIT(_argv[0],"|#|")
+	_result = ""
+
+	for _i=0,_tempstr = ""; _i < ARRAYSIZE(_str); _i++
+	{
+		_tempstr = CHARSPLIT(_str[_i])
+		for _j=0, _x=0, _y=0, _size = 3,_temp = ""; _j < ARRAYSIZE(_tempstr); _j++, _size = 4
+		{
+				if RAND(2) == 1; _temp = TOUPPER(_tempstr[_j])
+				else; _temp = TOLOWER(_tempstr[_j])
+
+				if RAND(2) == 1; _size = "+" + _size 
+				else; _size = "-" + _size
+
+				_x  = RAND(5)
+				_y  = RAND(5)
+
+				_result += "\_l[@%(_x),%(_y)]\f[height,%(_size)]" + _temp
+		}
+		--
+		_result += "|#|"
+		
+	}
+	--
+	//_str 
+	_result
+}
+
+Reverse
+{
+	_str = SPLIT(_argv[0],"|#|")
+	_result = ""
+
+	for _i=0,_tempstr = IARRAY; _i < ARRAYSIZE(_str); _i++
+	{
+		_tempstr = IARRAY
+		_tempstr = CHARSPLIT(_str[_i])
+		_tempstr = SPLIT(_tempstr,",")
+		_tempstr = REVERSE(_tempstr)
+
+		--
+		_result += JOIN(_tempstr,"") + "|#|"
+	}
+	--
+	//_str 
+	_result
+}
+
+
+Sorted
+{
+	_str = SPLIT(_argv[0],"|#|")
+	_result = ""
+
+	for _i=0,_tempstr = ""; _i < ARRAYSIZE(_str); _i++
+	{
+		_tempstr = CHARSPLIT(_str[_i])
+		_tempstr = ASORT(SPLIT(_tempstr,","))
+		--
+		_result += JOIN(_tempstr,"") + "|#|"
+		
+	}
+	--
+	_result
+}
+
+
+ISLETTER
+{
+	if _argv[0] =='A' || _argv[0] =='B' || _argv[0] =='C' || _argv[0] =='D' || _argv[0] =='E' || _argv[0] =='F' || _argv[0] =='G' || _argv[0] =='H' || _argv[0] =='I' || _argv[0] =='J' || _argv[0] =='K' || _argv[0] =='L' || _argv[0] =='M' || _argv[0] =='N' || _argv[0] =='O' || _argv[0] =='P' || _argv[0] =='Q' || _argv[0] =='R' || _argv[0] =='S' || _argv[0] =='T' || _argv[0] =='U' || _argv[0] =='V' || _argv[0] =='W' || _argv[0] =='X' ||  _argv[0] =='Y' || _argv[0] =='Z' || _argv[0] =='a' || _argv[0] =='b' || _argv[0] =='c' || _argv[0] =='d' || _argv[0] =='e' || _argv[0] =='f' || _argv[0] =='g' || _argv[0] =='h' || _argv[0] =='i' || _argv[0] =='j' || _argv[0] =='k' || _argv[0] =='l' || _argv[0] =='m' || _argv[0] =='n' || _argv[0] =='o' || _argv[0] =='p' || _argv[0] =='q' || _argv[0] =='r' || _argv[0] =='s' || _argv[0] =='t' || _argv[0] =='u' || _argv[0] =='v' || _argv[0] =='w' || _argv[0] =='x' || _argv[0] =='y' || _argv[0] =='z'; 1
+	else; -1
+}
+
+WitchSur
+{
+	if WitchStatus == "Frog Potion"; "\0\s[5004]"
+	elseif WitchStatus == "Dog Potion"; "\0\s[5000]"
+	elseif WitchStatus == "Cat Potion"; "\0\s[5001]"
+	elseif WitchStatus == "Fox Potion"; "\0\s[5002]"
+	elseif WitchStatus == "Rabbit Potion"; "\0\s[5003]"
+	elseif WitchStatus == "Vampire Potion"; "\0\s[5005]"
+	elseif WitchStatus == "Werewolf Potion"; "\0\s[5006]"
+	elseif WitchStatus == "Skeleton Potion"; "\0\s[5007]"
+	elseif WitchStatus == "Clown Potion"; "\0\s[5008]"
+	elseif WitchStatus == "Zombie Potion"; "\0\s[5009]"
+	elseif WitchStatus == "Ghost Potion"; "\0\s[5010]"
+	elseif WitchStatus == "Slime Potion"; "\0\s[5011]"
+	elseif WitchStatus == "Plant Potion"; "\0\s[5004]"
+	elseif WitchStatus == "Mer Potion"; "\0\s[5012]"
+	elseif WitchStatus == "Anima Potion"; "\0\s[5004]"
+	elseif WitchStatus == "Demon Potion"; "\0\s[5013]"
+	elseif WitchStatus == "Angel Potion"; "\0\s[5014]"
+	elseif WitchStatus == "Rain Potion"; "\0\s[0]\i[1001,wait]\w7\i[1003]"
+	elseif WitchStatus == "Freezing Potion"; "\0\s[5016]"
+	elseif WitchStatus == "Rain Potion"; "\0\s[0]"
+	elseif WitchStatus == "Rainbow Potion"; "\0\s[5015]"
+	elseif WitchStatus == "Sleep Potion"; "\0\s[5017]"
+	elseif WitchStatus == "Invisibility Potion"; "\0\i[1000,wait]\s[-1]"
+	elseif WitchStatus == "Money Potion"; "\0\s[0]"
+	elseif WitchStatus == "Strength Potion"; "\0\s[5018]"
+	elseif WitchStatus == "Hiccups Potion"; "\0\s[0]"
+	elseif WitchStatus == "Confetti Potion"; "\0\s[0]"
+	else; "\0\s[0][neutral]"
+}
+
+animalSounds : nonoverlap_pool
+{
+	"\f[italic,1]"
+	--
+	if WitchStatus == "Frog Potion"
+	{
+		"ribbit"
+		"croak"
+		"gribbt"
+		"gulp"
+		"burp"
+		"bloo"
+		"blurt"
+		"grrum"
+		"gack"
+		"grun"
+		"squelh"
+		"squawk"
+		"squish"
+		"rumble"
+		"chirp"
+	}
+	elseif WitchStatus == "Dog Potion"
+	{
+		"Woof"
+		"Bark"
+		"Arf"
+		"Ruff"
+		"Bow-wow"
+		"Yap"
+		"Howl"
+		"Growl"
+		"Whine"
+		"Yelp"
+	}
+	elseif WitchStatus == "Cat Potion"
+	{
+		"meow"
+		"purr"
+		"hiss"
+		"mew"
+		"growl"
+		"chirrup"
+		"trill"
+		"chirp"
+		"chatter"
+		"snarl"
+		"yowl"
+		"scrabble"
+		"mewl"
+		"whisker"
+		"pounce"
+		"sniff"
+	}
+	elseif WitchStatus == "Fox Potion"
+	{
+		"yip-yip"
+		"bark-bark"
+		"ruff-ruff"
+		"yap-yap"
+		"woo-woo"
+		"howl-howl"
+		"sniff-sniff"
+		"yowl-yowl"
+		"bork-bork"
+		"yiff-yiff"
+	}
+	elseif WitchStatus == "Rabbit Potion"
+	{
+		"Thump thump"
+		"Hop hop"
+		"Twitch twitch"
+		"Sniff sniff"
+		"Munch munch"
+		"Squeak squeak"
+		"Thumpity thump"
+		"Wiggle wiggle"
+		"Chomp chomp"
+		"Scritch scritch"
+	}
+	--
+	"\f[italic,0] "
+	
+}
+
+waterSound
+{ 
+	"Splash"
+    "Plop"
+    "Sploosh"
+    "Plunk"
+    "Splat"
+    "Kerplunk"
+    "Drip"
+    "Gush"
+    "Gurgling"
+    "Swoosh"
+}
+
+NoEmptyARRAYSIZE
+{
+	_return = IARRAY
+	--
+	if _argc == 1
+    {
+		_a = SPLIT(_argv[0],",") //split array
+		--
+		for _i=0;_i<ARRAYSIZE(_a);_i++
+		{
+			if _a[_i] != ""; _return ,= _a[_i] //add the numbers
+		}
+	}
+	else
+	{
+		for _i=0;_i<_argc;_i++
+		{
+			if _argv[_i] != ""; _return ,= _argv[_i] //add the numbers
+		}
+	}
+	--
+	ARRAYSIZE(_return)
+}

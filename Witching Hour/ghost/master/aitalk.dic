@@ -1,0 +1,159 @@
+OnAiTalk
+{
+	if CHAIN.IDName == ""
+	{
+		LastTalk = RandomTalk
+	}
+	else
+	{
+		LastTalk = ChainTalk
+	}
+	LastTalk
+}
+
+RandomTalk : nonoverlap_pool
+{
+	if WitchStatus == "Polish Potion"
+	{
+		"[annoyed]\![effect]Nie mogę uwierzyć, że muszę spędzić mój staż tutaj, w tej norze, z kimś, kto nie potrafi nawet warzyć eliksirów.[mocking] Jak w ogóle możesz zostać doświadczonym czarodziejem z tak kiepskimi umiejętnościami?"
+		"[mocking]\![effect]Standard akademii musiał naprawdę spaść, skoro ktoś taki jak ty nie tylko otrzymał tytuł, ale także dostał uczniów"
+		"[angry]\![effect]Nie mogę uwierzyć, że ktoś tak potężny jak ja wciąż musi chodzić na jakieś głupie staże, moje umiejętności mówią same za siebie, nie potrzebuję nikogo bez talentu, żeby mnie szkolił."
+		"[thinking]\![effect]Może uda ci się zrobić eliksir przemiany!\![effect][mocking]\![effect], myślę, że bycie żabą, byłoby o niebo lepsze w porównaniu do tego, jak wyglądasz teraz"
+		"[mocking]\![effect]Z tobą to porażka za porażką, co?"
+		"[annoyed]\![effect]Byłam _tą_ czarownicą w akademii\![effect][sigh]\![effect], nie mogę uwierzyć, że teraz muszę być\![effect][annoyed]\![effect]uczniem jakiejś starej, bezużytecznej wiedźmy"
+		"[annoyed]\![effect]Robię to tylko po to, żeby zdobyć licencję. Jak tylko ją zdobędę, opuszczę ten śmietnik, który nazywasz 'swoim warsztatem'."
+		"[annoyed]\![effect]Księżycu powyżej, te zasady są tak irytujące,\![effect][mocking]\![effect] 'Nie rób tego, nie dotykaj tamtego, nie używaj tu swojej magii',\![effect][annoyed]\![effect]jakby te bezużyteczne biurowe bydlaki mogły mi cokolwiek zrobić."
+		"[thinking]\![effect]Ci goście, którymi rzuciłam?\![effect][annoyed]\![effect] Zasłużyli na to. Dranie myśleli, że mogą być lepsi ode mnie, więc dałam im nauczkę"
+		"\b2[thinking]\![effect]Czym w ogóle się specjalizujesz? Czy w ogóle potrafisz coś zrobić\![effect][mocking]\![effect] czy otrzymałeś tytuł na podstawie znajomości? Ponieważ biorąc pod uwagę, że nigdy wcześniej nie robiłeś mikstur, nie jesteś chyba najbystrzejszy?\1\b2\n\![*]\q[Elemental Magic,OnRespondSpeciality,1]\n\![*]\q[Summoning,OnRespondSpeciality,2]\n\![*]\q[Illusion Magic,OnRespondSpeciality,3]\n\![*]\q[Divine Magic,OnRespondSpeciality,4]\n\![*]\q[Healing magic,OnRespondSpeciality,5]\n\![*]\q[Divination magic,OnRespondSpeciality,6]\n\![*]\q[Necromancy,OnRespondSpeciality,7]\n\![*]\q[Transformation Magic,OnRespondSpeciality,8]\n\![*]\q[Time Magic,OnRespondSpeciality,9]\n\![*]\q[Utility Magic,OnRespondSpeciality,10]"
+	}
+	else
+	{
+		"[annoyed]\![effect]I can't believe I have to spend my apprenticeship here, in this dump, with someone who can't even make potions.[mocking] How did you even become an elder witch with skills that bad?"
+		"[mocking]\![effect]The Academies standard must have really fallen if someone like you not only got a title but also apprentices."
+		
+		"[angry]\![effect]Can't believe that someone powerful like me still has to go on some stupid internship, my ablilities speak for themselves, I don't need some talentless nobody to train me"
+		"[thinking]\![effect]Maybe you will manage to make a transformation potion\![effect][mocking]\![effect], I think you would be better of looking like a frog compared to how you are now"
+		"[mocking]\![effect]It's fail after fail with you, isn't it?"
+		"[annoyed]\![effect]I was _the_ witch in the acadamy\![effect][sigh]\![effect], can't believe that now, I have to be an \![effect][annoyed]\![effect]apprentice to some old useless witch"
+		"[annoyed]\![effect]I'm only doing this to get my license. The moment I get it, I'm leaving this trash dump you call 'your workshop'"
+		"[annoyed]\![effect]Moon above, those rules are so annoying,\![effect][mocking]\![effect] 'Don't do this, don't touch that, don't use your magic here',\![effect][annoyed]\![effect] as if those useless office bastards could do anything to me"
+		"[thinking]\![effect]Those guy I flung?\![effect][annoyed]\![effect] They deserved it. Bastards thought they could be better than me, so I taught them a lesson"
+		"\b2[thinking]\![effect]What even is your speciality, anyway? As in, can you even do anything\![effect][mocking]\![effect] or did you get the title based on connection, because considering you never even made a potion before, you aren't the sharpest tool in the shed?\1\b2\n\![*]\q[Elemental Magic,OnRespondSpeciality,1]\n\![*]\q[Summonings,OnRespondSpeciality,2]\n\![*]\q[Illusion Magic,OnRespondSpeciality,3]\n\![*]\q[Divine Magic,OnRespondSpeciality,4]\n\![*]\q[Healing magic,OnRespondSpeciality,5]\n\![*]\q[Divination magic,OnRespondSpeciality,6]\n\![*]\q[Necromancy,OnRespondSpeciality,7]\n\![*]\q[Transformation Magic,OnRespondSpeciality,8]\n\![*]\q[Time Magic,OnRespondSpeciality,9]\n\![*]\q[Utility Magic,OnRespondSpeciality,10]"
+	}
+		
+}
+
+OnRespondSpeciality
+{
+	if WitchStatus == "Polish Potion"
+	{
+		switch TOINT(reference0)-1
+		{
+			"[mocking]\![effect]Jasne, że tak, wmawiaj to sobie"
+			"[mocking]\![effect]Co przywołujesz, mrówki?"
+			"[mocking]\![effect]Czy to tak zdałeś egzaminy?"
+			"[mocking]\![effect]Że niby Bóg wysłucha twoich próśb"
+			"[mocking]\![effect]Wątpię, czy potrafisz uleczyć nawet zadrapanie"
+			"[mocking]\![effect]Samo posiadanie gównianej kryształowej kuli nie czyni z ciebie specjalisty"
+			"[mocking]\![effect]To dlatego śmierdzisz jak gnijące zwłoki?"
+			"[mocking]\![effect]W takim razie musisz mieć okropny gust"
+			"[mocking]\![effect]Czy to dlatego bycie tutaj jest jak niekończąca się tortura?"
+			"[mocking]\![effect]Więc jesteś jeszcze bardziej bezużyteczny niż myślałem"
+		}
+	}
+	else
+	{
+			switch TOINT(reference0)-1
+		{
+			"[mocking]\![effect]Sure it is, keep telling yourself that"
+			"[mocking]\![effect]What do you summon, ants?"
+			"[mocking]\![effect]Is that how you passed you exams?"
+			"[mocking]\![effect]As if god would listen to your requests"
+			"[mocking]\![effect]I doubt you can even heal a scratch"
+			"[mocking]\![effect]Just having a shitty crystal ball, doesn't make you a specialist"
+			"[mocking]\![effect]Is that why you smell like a rotting corpse?"
+			"[mocking]\![effect]You must have a terrible taste then"
+			"[mocking]\![effect]Is that why being here is like an endless torture?"
+			"[mocking]\![effect]So you're even more useless than I thought"
+		}
+	}
+}
+
+OnMinuteChange
+{
+	for _i = 0; _i < ARRAYSIZE(timers); _i++
+	{
+		timers[_i]++
+	}
+	--
+	if timers[0] >= PaceSetting[2]
+	{
+		ballStatus = 2
+		"\p[2]\s[2]\i[%(ballStatus)]"
+	}
+	elseif timers[0] >= PaceSetting[1]
+	{
+		ballStatus = 1
+		"\p[2]\s[2]\i[%(ballStatus)]"
+	}
+	--
+	if timers[1] >= potionTime && potionTime != 0
+	{
+		timers[1] = 0
+		potionTime = 0
+		WitchStatus = "None"
+		"\0\s[0]\i[1000]"
+	}
+	--
+	if WitchStatus == "None"; potionTime = 0
+	--
+	if RAND(PaceSetting[0]) == 0 && winstate != "minimized"; SpawnIngr
+	--
+	OnRestore
+}
+
+SpawnIngr
+{
+	if entityCount < 5; entityCount = 5
+	else; entityCount++
+	--
+	_ingredient = ANY(ingrName)
+	_index = LSO
+
+	if _argv[0] != ""
+	{
+		_ingredient = _argv[0]
+		_index = ASEARCH(_argv[0],ingrName)
+	}
+
+	_offx = 0
+	entity[entityCount] = _ingredient
+	entitySurface[entityCount] = ingrSurf[_index]
+
+	_offx = RAND(displaywidth - 50 ) + 30
+	--
+	"\p[%(entityCount)]\![move,--X=%(_offx),--time=0,--base=primaryscreen]\![set,alignmenttodesktop,bottom]\p[%(entityCount)]\s[%(entitySurface[entityCount])]\i[100]\![set,alignmenttodesktop,free]"
+}
+
+firstSpawn
+{
+	if entityCount < 5; entityCount = 5
+	else; entityCount++
+	--
+	_ingredient = ANY(ingrName)
+	_index = LSO
+
+	if _argv[0] != ""
+	{
+		_ingredient = _argv[0]
+		_index = ASEARCH(_argv[0],ingrName)
+	}
+
+	_offx = 0
+	entity[entityCount] = _ingredient
+	entitySurface[entityCount] = ingrSurf[_index]
+
+	--
+	"\p[%(entityCount)]\![move,--X=-250,--time=0,--base=1]\![set,alignmenttodesktop,bottom]\p[%(entityCount)]\s[%(entitySurface[entityCount])]\i[100]\![set,alignmenttodesktop,free]"
+
+}

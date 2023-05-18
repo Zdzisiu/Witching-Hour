@@ -1,0 +1,572 @@
+OnTranslate
+{
+	_talk = reference0
+	
+	//This is what makes %(embedded_elements) work in script input
+	if reference1 == "" && reference2 == "" //If this is from the input box
+	{ //send input box : no event (ref2) , no special flag (ref1)
+		_talk = EVAL('"' + REPLACE(_talk,'"','" + CHR(0x22) + "') + '"')
+		_talk = OnTranslateInternal.MarkdownProcessor(_talk)
+		//_talk = OnTranslateInternal.SpeechPotions(_talk)
+		_talk
+	}
+	
+	//If you want to add anything to OnTranslate, like text replacement, I would put it after this point, generally. Just make sure it's before the TOSTR(_talk)
+	--
+	TOSTR(_talk)
+}
+
+OnTranslateInternal.SpeechPotions
+{
+	_talk = _argv[0]
+	_result = ""
+	_temp = ""
+
+	if "\![effect]" _in_ _talk
+	{
+		_tempTalk = SPLIT(_talk,"\![effect]")
+		for _i = 1; _i < ARRAYSIZE(_tempTalk); _i++
+		{
+			if _i%2 != 0
+			{
+				_scooped_tags = SakuraScooper(_tempTalk[_i])
+
+				foreach _scooped_tags; _scoop
+				{
+					_tempTalk[_i] = REPLACE(_tempTalk[_i],_scoop,"|#|",1)
+				}
+
+				if WitchStatus == "Alcohol"; _tempTalk[_i] = Wobble(_tempTalk[_i])
+				elseif WitchStatus == "Loud Potion"; _tempTalk[_i] = "\f[height,+4]\f[bold,1]" + TOUPPER(_tempTalk[_i]) + "\f[bold,0]\f[default]"
+				elseif WitchStatus == "Whispering Potion"; _tempTalk[_i] = "\f[height,-4]\f[italic,1]" + TOLOWER(_tempTalk[_i]) + "\f[italic,0]\f[default]"
+				elseif WitchStatus == "Gibberish Potion"
+				{
+					_temp = SPLIT(_tempTalk[_i]," ")
+					_tempTalk[_i] = ""
+					for _j = 0; _j < ARRAYSIZE(_temp); _j++
+					{
+						_tempTalk[_i] += FakeWord(4,5,'sylabs',1,1,1,1,1) + " "
+					}
+				}
+				elseif WitchStatus == "Silence Potion" || WitchStatus == "Freezing Potion" || WitchStatus == "Sleep Potion"; _tempTalk[_i] = ". . ."
+				elseif WitchStatus == "OwO Potion"; _tempTalk[_i] = OWO(_tempTalk[_i])
+				elseif WitchStatus == "Sorted Speech Potion"; _tempTalk[_i] = Sorted(_tempTalk[_i])
+				elseif WitchStatus == "Reverse Speech Potion"; _tempTalk[_i] = Reverse(_tempTalk[_i])
+				elseif WitchStatus == "Frog Potion"  ||  WitchStatus == "Dog Potion"  ||  WitchStatus == "Cat Potion"  ||  WitchStatus == "Fox Potion"  ||  WitchStatus == "Rabbit Potion"
+				{
+					_temp = SPLIT(_tempTalk[_i]," ")
+					_tempTalk[_i] = ""
+					for _j = 0; _j < ARRAYSIZE(_temp); _j++
+					{
+						_tempTalk[_i] += TOLOWER(animalSounds)
+					}
+				}
+
+				foreach _scooped_tags; _scoop
+				{
+					_tempTalk[_i] = REPLACE(_tempTalk[_i],"|#|",_scoop,1)
+				}
+
+				_tempTalk[_i] = REPLACE(_tempTalk[_i],"|#|","")
+			}
+			else; _tempTalk[_i] = "\f[default]" + _tempTalk[_i]
+			_result += _tempTalk[_i]
+		}
+	}
+	--
+	_result
+}
+
+OnTranslateInternal.Expression
+{
+	_talk = _argv[0]
+
+	/*if WitchStatus != "Frog Potion" && WitchStatus != "Dog Potion" && WitchStatus != "Cat Potion" && WitchStatus != "Fox Potion" && WitchStatus != "Rabbit Potion"
+	{
+		_talk = REPLACE(_talk,"[neutral]","\i[1]\i[50]\i[100]\i[500]")
+		_talk = REPLACE(_talk,"[mocking]","\i[7]\i[500]")
+		//_talk = REPLACE(_talk,"[annoyed]","\i[8]\i[500]")
+		_talk = REPLACE(_talk,"[annoyed]","\i[6]\i[500]")
+		_talk = REPLACE(_talk,"[sigh]","\i[6]\i[500]")
+		_talk = REPLACE(_talk,"[thinking]","\i[5]\i[500]")
+	}
+	else
+	{*/
+		_talk = REPLACE(_talk,"[neutral]","")
+		_talk = REPLACE(_talk,"[mocking]","")
+		_talk = REPLACE(_talk,"[annoyed]","")
+		_talk = REPLACE(_talk,"[sigh]","")
+	//}
+
+	_talk
+}
+
+
+//The deflicker effect works thusly:
+// \C _must_ come first in whatever script it is in. This makes the previous balloon instantly reopen itself to whatever it displayed last. Then we lock the balloon so it stops drawing for a bit, and clear it so that we can add new content. Once the new content has been added, we then unlock the balloon. This makes it appear to the user that the previous content has switched to the new content instantly, with no flicker of a blank balloon inbetween.
+
+//OnTranslateInternal functions will automatically run in YAYA for each event if they exist, just like OnTranslate
+OnTranslateInternal.Deflicker
+{
+    _talk = _argv[0]
+    if "\![deflicker]" _in_ _talk //Only apply this effect if the user wants it
+    {
+        _talk = REPLACE(_talk,"\![deflicker]","")
+        _talk = "\C\![lock,balloonrepaint]\c" + _talk
+        if "\e" _in_ _talk; _talk = REPLACE(_talk,"\e","\![unlock,balloonrepaint]\e") //Make sure it comes before \e so it runs properly
+        else; _talk += "\![unlock,balloonrepaint]"
+        _talk
+    }
+}
+
+//Written by Zichqec https://zichqec.github.io/s-the-skeleton/
+/*
+This function should work in any YAYA ghost. Just copy the whole function into your ghost somewhere, and it should be applied automatically!
+If you're using AYA, you can just copy over the entire if check into your normal OnTranslate function, and leave out the other lines of code.
+
+
+How to write your dialogues with this processor:
+
+This is some dialogue. Pauses will be inserted after punctuation marks, so long as there is a space after them! If you want to control the timing manually...\w8\w8\w8\w8 you can do that too. \n\nMake sure you add a space before linebreaks if you want the previous sentence to have a pause after it.\![dummy-tag] You can also purposefully not add a space (or put another tag in the way) if you want to omit the pause.
+
+With the default setup, this would be the output:
+
+This is some dialogue.\w8 Pauses will be inserted after punctuation marks,\w4 so long as there is a space after them!\w8 If you want to control the timing manually...\w8\w8\w8\w8 you can do that too.\w8 \n\nMake sure you add a space before linebreaks if you want the previous sentence to have a pause after it.\![dummy-tag] You can also purposefully not add a space (or put another tag in the way) if you want to omit the pause.
+
+
+Pause tags are added after punctuation marks, but ONLY if that punctuation mark is followed immediately by a space. You can use this to control whether or not a pause is added at any point in your dialogue.
+
+You can also add \![no-autopause] anywhere in a script to prevent pauses from being added in any part of the script! This is useful for things like menus.
+Be careful that you don't have a comma and space combination in your sakurascript tags! As long as you write them like \![raise,OnThing,Arg 1] and not \![raise, OnThing, Arg 1], you should be fine.
+
+You can adjust this all how you like. I also included options to handle ellipsis separately.
+You'll have to be a bit mindful of how you write your dialogues, but this can make it much easier/cleaner in general!
+*/
+OnTranslateInternal.AutoPauses
+{
+	_talk = _argv[0]
+	
+	if "\![no-autopause]" !_in_ _talk
+	{
+		/*
+		//Additional options if you want ellipsis to have little pauses between each dot. Personally, I think I want to do that manually, for when I want a particular flavor.
+		*/
+
+		_talk = REPLACE(_talk,"... ",".\w2.\w2.\w8 ") //Ellipsis
+		_talk = REPLACE(_talk,"..? ",".\w2.\w2?\w8 ") //Question mark + ellipsis
+		_talk = REPLACE(_talk,"..! ",".\w2.\w2!\w8 ") //Exclamation point + ellipsis
+		_talk = REPLACE(_talk,", ",",\w4 ") //Comma
+		_talk = REPLACE(_talk,". ",".\w8 ") //Period
+		_talk = REPLACE(_talk,"? ","?\w8 ") //Question mark
+		_talk = REPLACE(_talk,"! ","!\w8 ") //Exclamation point
+		//_talk = REPLACE(_talk,"- ","-\w8 ") //Dash - This one seems to happen a lot when I don't want it, so I am commenting it out
+		_talk = REPLACE(_talk,"; ",";\w4 ") //Semicolon
+	}
+	
+	_talk
+}
+
+//This is just here so you can use anchors to link to websites if you want. You can link to websites with normal menu choice tags! If you do, a handy URL preview will show up in the balloon!
+OnAnchorSelect
+{
+	if "http://" _in_ reference0 || "https://" _in_ reference0; "\j[""%(reference0)""]"
+	else
+	{
+		"\![raise,OnExplain,%(reference0)]"
+	}
+}
+
+//Hotkeys
+OnKeyPress
+{
+	if reference0 == "f1"; "\![open,readme]"
+	elseif reference0 == "t"; OnAiTalk
+	elseif reference0 == "r"; OnLastTalk
+}
+
+//Happens about 30 seconds after a script ends, by default, to bring them back to normal poses
+OnSurfaceRestore : all
+{
+	OnRestore
+}
+
+OnRestore : all
+{
+	"\1\s[10]\p[2]\s[2]"
+	
+	if ballStatus > 0; "\i[%(ballStatus)]"
+	
+	if entityCount > 4
+	{
+		for _i = 5; _i <= entityCount; _i++
+		{
+			if "Potion" _in_ entity[_i] || entity[_i] == "Alcohol"; "\p[%(_i)]\s[%(entitySurface[_i])]\i[0]"
+			else; "\p[%(_i)]\s[%(entitySurface[_i])]"
+		}
+	}
+	--
+	_scale = TOINT(nowscale)
+	if WitchStatus == "Small Potion"; _scale -= 50 //\i[501,wait]
+	elseif WitchStatus == "Big Potion"; _scale += 50
+	elseif WitchStatus == "Reverse Gravity Potion"; _scale *= -1
+	--
+	if WitchStatus == "Reverse Gravity Potion"; "\0\s[0]\i[501,wait]\0\![set,alignmenttodesktop,top]"
+	else; "\0\![set,alignmenttodesktop,bottom]\![set,alignmenttodesktop,free]"
+	--
+	if WitchStatus == "Frog Potion"; "\0\s[5004]"
+	elseif WitchStatus == "Dog Potion"; "\0\s[5000]"
+	elseif WitchStatus == "Cat Potion"; "\0\s[5001]"
+	elseif WitchStatus == "Fox Potion"; "\0\s[5002]"
+	elseif WitchStatus == "Rabbit Potion"; "\0\s[5003]"
+	elseif WitchStatus == "Vampire Potion"; "\0\s[5005]"
+	elseif WitchStatus == "Werewolf Potion"; "\0\s[5006]"
+	elseif WitchStatus == "Skeleton Potion"; "\0\s[5007]"
+	elseif WitchStatus == "Clown Potion"; "\0\s[5008]"
+	elseif WitchStatus == "Zombie Potion"; "\0\s[5009]"
+	elseif WitchStatus == "Ghost Potion"; "\0\s[5010]"
+	elseif WitchStatus == "Slime Potion"; "\0\s[5011]"
+	elseif WitchStatus == "Plant Potion"; "\0\s[5004]"
+	elseif WitchStatus == "Mer Potion"; "\0\s[5012]"
+	elseif WitchStatus == "Anima Potion"; "\0\s[5004]"
+	elseif WitchStatus == "Demon Potion"; "\0\s[5013]"
+	elseif WitchStatus == "Angel Potion"; "\0\s[5014]"
+	elseif WitchStatus == "Rain Potion"; "\0\s[0]\i[1001,wait]\w7\i[1003]"
+	elseif WitchStatus == "Freezing Potion"; "\0\s[5016]"
+	elseif WitchStatus == "Rainbow Potion"; "\0\s[5015]"
+	elseif WitchStatus == "Sleep Potion"; "\0\s[5017]"
+	elseif WitchStatus == "Invisibility Potion"; "\0\i[1000,wait]\s[-1]"
+	elseif WitchStatus == "Strength Potion"; "\0\s[5018]"
+	else; "\0\s[0][neutral]"
+}
+
+OnShellScaling
+{
+	nowscale = reference0
+}
+
+//Network update url. Make sure you have a / on the end of the url or it will give a warning every time users try to update! If you don't plan to use network updates you can remove this
+//IF YOU'RE USING GITHUB FOR NETWORK UPDATES: DO NOT USE github.io URLS! It will cause you pain and suffering. USE raw.githubusercontent!!!
+//To get the raw.githubusercontent link super easy:
+//• Open your ghost's repo online
+//• navigate to the ghost's folder (the top level one, with install.txt, readme.txt, etc)
+//• Click on install.txt, or another text file on that level
+//• Once on that page, click the "raw" button. You should see the url now starts with raw.githubusercontent
+//• Copy that url exactly as is, but *leave off the "install.txt" or whatever file name at the end.*
+//Tada! That's your url! Make sure you test it! The dev palette and script/network log can help with that
+On_homeurl
+{
+	""
+}
+
+
+//—————————————————————————————— Right click menu links ——————————————————————————————
+
+//Takes an array of alternating names and urls, and formats them for use with the right click menu
+FormatLinks : all
+{
+	for _i = 0; _i < ARRAYSIZE(_argv); _i++
+	{
+		_argv[_i] //Add the link/title
+		//Alternate between adding %ASC(1) or %ASC(2)
+		if _i % 2 == 1; "%ASC(2)"
+		else; "%ASC(1)"
+	}
+}
+
+On_sakura.recommendsites
+{
+	FormatLinks(recommendsites_sakura)
+}
+
+//These are the websites linked in the top option of the sakura's right click menu. The format is simple; write the label of the link on the left followed by a semicolon, and then on the right, the url to link to. These should be separate strings.
+recommendsites_sakura : array
+{
+	"Other Grimoires";	"https://link.example.com/link/to/whatever/here/"
+}
+
+On_sakura.portalsites 
+{
+	FormatLinks(portalsites_sakura)
+}
+
+//These are the websites linked in the second option of the sakura's right click menu. Same as above
+portalsites_sakura : array
+{
+	"Another link label";	"https://link.example.com/link/to/whatever/here/again/"
+	"A third link label";	"https://link.example.com/link/to/whatever/a/third/time/you/can/add/as/many/as/you/want/"
+}
+
+On_kero.recommendsites
+{
+	FormatLinks(recommendsites_kero)
+}
+
+//These are the websites linked in the first option of the kero's right click menu. Same as above
+recommendsites_kero : array
+{
+	"These labels can be anything you want";	"https://link.example.com/link/to/whatever/here/once/more/"
+}
+
+
+//—————————————————————————————— User pronoun related ——————————————————————————————
+
+they
+{
+	if SHIORI3FW.UserSex == "male"; "he"
+	elseif SHIORI3FW.UserSex == "female"; "she"
+	else; "they"
+}
+
+them
+{
+	if SHIORI3FW.UserSex == "male"; "him"
+	elseif SHIORI3FW.UserSex == "female"; "her"
+	else; "them"
+}
+
+their
+{
+	if SHIORI3FW.UserSex == "male"; "his"
+	elseif SHIORI3FW.UserSex == "female"; "her"
+	else; "their"
+}
+
+theirs
+{
+	if SHIORI3FW.UserSex == "male"; "his"
+	elseif SHIORI3FW.UserSex == "female"; "hers"
+	else; "theirs"
+}
+
+themself
+{
+	if SHIORI3FW.UserSex == "male"; "himself"
+	elseif SHIORI3FW.UserSex == "female"; "herself"
+	else; "themself"
+}
+
+//%(they) %(p('are','is'))
+//You can change the name of this function if you want! I kept it short so it's fast to type
+p
+{
+	if SHIORI3FW.UserSex == "undef"; _argv[0] //they are
+	else; _argv[1] //he is/she is
+}
+
+/*
+
+An example of the above setup:
+"%(they) %(p('were','was')) looking for that earlier, I'll ask if %(they)'%('ve','s') found it."
+
+If using they, the %(p) functions will return the first word specified, resulting in:
+"they were looking for that earlier, I'll ask if they've found it."
+
+If not using they, for example if using she, it will return the second specified word instead, resulting in:
+"she was looking for that earlier, I'll ask if she's found it."
+
+With this function, you can quickly customize words that need to change based on whether it should be singular or plural. Just remember; the %(p) function is set up so that the first word you specify matches with the 'they' labels used on the pronoun functions. You can always switch that around if you like, too.
+
+*/
+
+//Copied from the base SHIORI files, but with the username variable added
+OnNotifyUserInfo : void
+{
+	SHIORI3FW.UserName = reference[0]
+	username = reference[0]
+	SHIORI3FW.UserNameFull = reference[1]
+	SHIORI3FW.UserBirthday = SPLIT(reference[2],',',3)
+	for _i = 0 ; _i < 3 ; _i++ {
+		SHIORI3FW.UserBirthday[_i] = TOINT(SHIORI3FW.UserBirthday[_i])
+	}
+	SHIORI3FW.UserSex = reference[3]
+}
+
+OnDisplayChange
+{
+	displaybpp    = reference0
+ 	displaywidth  = reference1
+	displayheight = reference2
+}
+
+OnDressupChanged
+{
+	if reference3 == "Bottle" && reference2 == 1
+	{
+		_bottle = reference1
+		_bottlenames = ("Regular","Crystal","Heart","Diamond","Star")
+		bottleSurface = 2000 + ASEARCH(_bottle,_bottlenames)
+	}
+	if reference3 == "Decoration" && reference2 == 1
+	{
+		curDec = reference1
+	}
+}
+
+//Written by Zichqec https://zichqec.github.io/s-the-skeleton/
+
+//Usage: This is intended to take the place of single-use variables that only contain 0 or 1, used as flags for certain events and such. With these functions, you can store all those flags as a single array, meaning you can make as many flags as you want without having to really worry about save bloat. It can also make your code a bit more readable!
+
+//You'll want to put 'MiscFlags = IARRAY' into your OnFirstBoot. That'll set up an empty array for flags to be stored in.
+//When you want to check if a flag is set or not, you can do it like so:
+//if Flag("My Flag") == 0
+//or
+//if Flag("My Flag") == 1
+
+//Any flags that are NOT in the array are 0, and any flags that ARE in the array are 1. So, to set a flag to 1, you add it to the array like this:
+//if Flag("My Flag") == 0; MiscFlags ,= "My Flag"
+
+//You don't technically need the if check there, but it stops duplicate entries from being added. The ,= is also important; that adds a new element to an array. Don't use += for this!
+
+//If you want to set a flag back to 0, you can remove it like so:
+//RemoveFlag("My Flag")
+
+//Flag names can be just about anything you want! They're just stored as strings. For example, for S I have "Saw Gaster with googly eyes", and for Lulo I have things like "Unlocked MP3 player" and "Unlocked journal". If you want to see what flags are set, you can just put %(MiscFlags) into script input, so it's helpful to have names that describe the flag!
+
+Flag //Checks to see if a flag exists. Returns 1 if yes, returns 0 if no
+{
+	if ASEARCH(_argv[0],MiscFlags) != -1; 1
+	else; 0
+}
+
+RemoveFlag //Removes all instances of a flag in the array.
+{
+	_elements = ASEARCHEX(_argv[0],MiscFlags)
+	if ARRAYSIZE(_elements) > 0
+	{
+		for _i = ARRAYSIZE(_elements) - 1; _i >= 0; _i-- //Goes from the end of the list to the start, so the elements stay in the same positions while we erase
+		{
+			_current = _elements[_i]
+			MiscFlags[_current] = IARRAY
+		}
+	}
+}
+
+//by smokycinnamonroll if it matters to u
+//for zi's flag system. to use just do AddFlag("urflag") and this will handle it
+AddFlag {
+    if Flag(_argv[0]) == 0; MiscFlags ,= _argv[0]
+    //_argv[0] is the string passed to it (so "urflag"). all it's doing is checking if the flag exists, and if it doesnt, adding it
+}
+
+
+//Technical details:
+
+//ASEARCH is a YAYA command that searches an array for the value you specify. If it doesn't find the value, it returns -1. If it finds the value, it returns the position in the array.
+
+//ASEARCHEX is similar, but it finds all instances of the same value, and returns the positions as a new array.
+
+//So, it IS possible to skip a step here and write if ASEARCH("My Flag",MiscFlags) != -1, to see if a flag is set. But != -1 is a bit confusing at times! So the Flag function here returns 1 if the flag is set, and 0 if it is not, to simplify things.
+
+//With the RemoveFlag function, all it does is see how many instances of the value there are, then start erasing them from the end of the array working towards the start of the array, so that the array positions don't change as it erases. The reason I've done it this way is so that if someone accidentally adds the same flag to the array a bunch of times, all of them will be erased, so that the flag returns 0.
+OnDisplayUnsuedRecipes : all
+{
+	_potReq = IARRAY
+	_cat = UNIQUE(potReqCategory)
+	_el = UNIQUE(potReqElement)
+	_or = UNIQUE(potReqOrigin)
+	_print = ""
+	--
+	"\1\b2\_q\![set,balloontimeout,0]\![set,autoscroll,disable]"
+	--
+	for _i = 0; _i < ARRAYSIZE(potReqCategory); _i++
+	{
+		_potReq ,= potReqCategory[_i] + "," + potReqElement[_i] + ","  + potReqOrigin[_i]
+	}
+	--
+	for _i = 0,_b = 0; _i < ARRAYSIZE(_cat); _i++
+	{
+		for _j = 0; _j < ARRAYSIZE(_el); _j++
+		{
+			for _x = 0; _x < ARRAYSIZE(_or); _x++
+			{
+				if ASEARCH("%(_cat[_i]),%(_el[_j]),%(_or[_x])",_potReq) == -1 && "-" !_in_ "%(_cat[_i]),%(_el[_j]),%(_or[_x])"
+				{
+					_b + "."+_cat[_i]+","+_el[_j]+","+_or[_x] + "\n"
+					_b++
+				}
+			}
+		}
+	}
+	"\![*]\q[Back,OnDebug]"
+}
+
+OnDisplayIngrInfo : all
+{
+	"\b2\_q\![set,balloontimeout,0]\![set,autoscroll,disable]"
+	for _i = 0; _i < ARRAYSIZE(ingrName); _i++
+	{
+		ingrName[_i] + "(" + ingrSurf[_i] + "): " + ingrCategory[_i] + "; " + ingrElement[_i] + "; "+ ingrOrigin[_i] + "\n\n[half]"
+	}
+	"\![*]\q[Back,OnDebug]"
+}
+
+OnDisplayAllPotReq : all
+{
+	"\b2\_q\![set,balloontimeout,0]\![set,autoscroll,disable]"
+	for _i = 0; _i < ARRAYSIZE(potName); _i++
+	{
+		potName[_i] + ": " + potReqCategory[_i] + "," + potReqElement[_i] + ","  + potReqOrigin[_i] + "\n\n[half]"
+	}
+	"\![*]\q[Back,OnDebug]"
+}
+
+OnDisplayPotionReqDupes : all
+{
+	"\![reload,shiori]"
+	_searched = IARRAY
+	_temp = IARRAY
+	_potReq = IARRAY
+	OnInitialize
+	--
+	"\b2\_q\![set,autoscroll,disable]\![*]\q[Reload,OnDisplayPotionReqDupes]\![set,balloontimeout,0]\*\n"
+	for _i = 0; _i < ARRAYSIZE(potName); _i++
+	{
+		_potReq ,= potReqCategory[_i] + "," + potReqElement[_i] + ","  + potReqOrigin[_i]
+	}
+
+	for _i = 0; _i < ARRAYSIZE(potName); _i++
+	{
+		_temp = ASEARCHEX(_potReq[_i],_potReq)
+		if ARRAYSIZE(_temp) > 1 && ASEARCH(_potReq[_i],_searched) == -1
+		{
+			"%(ARRAYSIZE(_temp)) Duplicates:\n\n[half]"
+			for _j = 0, _x = 0; _j < ARRAYSIZE(_temp); _j++
+			{
+				_x = _temp[_j]
+				"%(potName[_x]): %(_potReq[_x]) : %(_x)\n\n[half]"
+			}
+			"\n[half]-------------\n\n"
+		}
+		--
+		_searched ,= _potReq[_i]
+	}
+	"\_q\![*]\q[Back,OnDebug]"
+	OnDisplayUnsuedRecipes
+}
+
+
+OnFileDrop2
+{
+	_filepath = SPLITPATH(reference0)
+	_filename = _filepath[2]
+	_fileext = TOLOWER(_filepath[3])
+	_patternPath = "..\..\shell\master\colors\" 
+	_pathToShell = "..\..\shell\master\" 
+
+	if curDec == "Picture Frame"
+	{
+		case _fileext
+		{
+			when ".jpg", ".jpeg", ".bmp", ".png" //if image extension
+			{
+				_a = FUNCTIONEX("Saori/proxy_ex.dll","Saori/color.exe","resize_org_ratio",reference0,"65","64",_patternPath + "picture.png")
+				--
+				_a = FUNCTIONEX("Saori/proxy_ex.dll","Saori/color.exe","overlayfast_merge",(_pathToShell + "surface135.png"),(_patternPath + "picture.png"),_pathToShell+"surface135")
+				--
+				"\![reload,shell]" //reload the shell to see results
+				--
+				OnRestore
+			}
+		}
+	}
+}
