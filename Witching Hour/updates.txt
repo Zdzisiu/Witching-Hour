@@ -23,7 +23,7 @@ file,ghost/master/yaya_base/optional.dicff4da728a656a8aa6a38939e654c51f2size=9
 file,ghost/master/yaya_base/shiori3.dic1020638d5e3881c23cc9baabc366e730size=52209date=2023-04-02T16:34:13
 file,ghost/master/yaya_emerg.txt9e43b4696366a536ecc69e45d80e392csize=607date=2023-04-14T21:44:19
 file,install.txt4ef05d36111675edfa488fd8e4c07a19size=72date=2023-05-12T07:43:51
-file,readme.txtaeca1daf37447b87097d169624a41229size=524date=2023-05-19T00:41:02
+file,readme.txt2ae8a0b8001d4e4b8af78813c240f8a8size=524date=2023-05-19T01:08:32
 file,shell/master/CustomDialogue.dicd41d8cd98f00b204e9800998ecf8427esize=0date=2023-05-12T19:58:58
 file,shell/master/WitchProfile.txtac1c37998fce1db7cf0fe7bcff40193bsize=981date=2023-05-17T21:05:59
 file,shell/master/WitchSave.txtd41d8cd98f00b204e9800998ecf8427esize=0date=2023-05-12T19:58:58

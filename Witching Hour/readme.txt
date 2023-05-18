@@ -1,6 +1,6 @@
 Jam Ghost Witching Hour:
 
-Take on a role of an elder witch guiding your apprentince on the right path. 
+Take on a role of an elder witch, guiding your apprentice on the right path. 
 
 Also known as: You have been gifted a guinea pig for your potion experiments by a magic school.
 
@@ -14,4 +14,4 @@ Zombies
 Skeletons
 Blood
 Descriptions of gore
-Language that may not be suitable for your christian minecraft server
+Language that may not be suitable for your Christian minecraft server
