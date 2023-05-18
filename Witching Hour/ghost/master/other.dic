@@ -255,7 +255,7 @@ OnShellScaling
 //Tada! That's your url! Make sure you test it! The dev palette and script/network log can help with that
 On_homeurl
 {
-	""
+	"https://raw.githubusercontent.com/Zdzisiu/Witching-Hour/main/Witching%20Hour/"
 }
 
 
