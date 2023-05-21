@@ -201,7 +201,7 @@ OnRestore : all
 		for _i = 5; _i <= entityCount; _i++
 		{
 			if "Potion" _in_ entity[_i] || entity[_i] == "Alcohol"; "\p[%(_i)]\s[%(entitySurface[_i])]\i[0]"
-			else; "\p[%(_i)]\s[%(entitySurface[_i])]"
+			elseif entitySurface[_i] != "" && entity[_i]; "\p[%(_i)]\s[%(entitySurface[_i])]"
 		}
 	}
 	--
@@ -210,8 +210,8 @@ OnRestore : all
 	elseif WitchStatus == "Big Potion"; _scale += 50
 	elseif WitchStatus == "Reverse Gravity Potion"; _scale *= -1
 	--
-	if WitchStatus == "Reverse Gravity Potion"; "\0\s[0]\i[501,wait]\0\![set,alignmenttodesktop,top]"
-	else; "\0\![set,alignmenttodesktop,bottom]\![set,alignmenttodesktop,free]"
+	if WitchStatus == "Reverse Gravity Potion"; "\0\s[0]\0\![set,alignmenttodesktop,top]"
+	else; "\0"
 	--
 	if WitchStatus == "Frog Potion"; "\0\s[5004]"
 	elseif WitchStatus == "Dog Potion"; "\0\s[5000]"
@@ -234,7 +234,7 @@ OnRestore : all
 	elseif WitchStatus == "Freezing Potion"; "\0\s[5016]"
 	elseif WitchStatus == "Rainbow Potion"; "\0\s[5015]"
 	elseif WitchStatus == "Sleep Potion"; "\0\s[5017]"
-	elseif WitchStatus == "Invisibility Potion"; "\0\i[1000,wait]\s[-1]"
+	elseif WitchStatus == "Invisibility Potion"; "\0\s[-1]"
 	elseif WitchStatus == "Strength Potion"; "\0\s[5018]"
 	else; "\0\s[0][neutral]"
 }
@@ -470,20 +470,19 @@ OnDisplayUnsuedRecipes : all
 	--
 	for _i = 0; _i < ARRAYSIZE(potReqCategory); _i++
 	{
-		_potReq ,= potReqCategory[_i] + "," + potReqElement[_i] + ","  + potReqOrigin[_i]
+		_potReq ,= potReqCategory[_i] + "," + potReqElement[_i] //+ ","  + potReqOrigin[_i]
 	}
 	--
-	for _i = 0,_b = 0; _i < ARRAYSIZE(_cat); _i++
+	for _i = 0,_b = 1; _i < ARRAYSIZE(_cat); _i++
 	{
 		for _j = 0; _j < ARRAYSIZE(_el); _j++
 		{
-			for _x = 0; _x < ARRAYSIZE(_or); _x++
+			//if ASEARCH("%(_cat[_i]),%(_el[_j]),%(_or[_x])",_potReq) == -1 && "-" !_in_ "%(_cat[_i]),%(_el[_j]),%(_or[_x])"
+			if ASEARCH("%(_cat[_i]),%(_el[_j])",_potReq) == -1 && "-" !_in_ "%(_cat[_i]),%(_el[_j])"
 			{
-				if ASEARCH("%(_cat[_i]),%(_el[_j]),%(_or[_x])",_potReq) == -1 && "-" !_in_ "%(_cat[_i]),%(_el[_j]),%(_or[_x])"
-				{
-					_b + "."+_cat[_i]+","+_el[_j]+","+_or[_x] + "\n"
-					_b++
-				}
+				_b + "."+_cat[_i]+","+_el[_j]//+","+_or[_x]
+				"\n"
+				_b++
 			}
 		}
 	}
@@ -521,7 +520,7 @@ OnDisplayPotionReqDupes : all
 	"\b2\_q\![set,autoscroll,disable]\![*]\q[Reload,OnDisplayPotionReqDupes]\![set,balloontimeout,0]\*\n"
 	for _i = 0; _i < ARRAYSIZE(potName); _i++
 	{
-		_potReq ,= potReqCategory[_i] + "," + potReqElement[_i] + ","  + potReqOrigin[_i]
+		_potReq ,= potReqCategory[_i] + "," + potReqElement[_i] //+ ","  + potReqOrigin[_i]
 	}
 
 	for _i = 0; _i < ARRAYSIZE(potName); _i++
@@ -533,7 +532,7 @@ OnDisplayPotionReqDupes : all
 			for _j = 0, _x = 0; _j < ARRAYSIZE(_temp); _j++
 			{
 				_x = _temp[_j]
-				"%(potName[_x]): %(_potReq[_x]) : %(_x)\n\n[half]"
+				"%(potName[_x]): %(_potReq[_x]) : %(1+_x)\n\n[half]"
 			}
 			"\n[half]-------------\n\n"
 		}

@@ -107,12 +107,17 @@ OnMinuteChange
 	--
 	if WitchStatus == "None"; potionTime = 0
 	--
-	if RAND(PaceSetting[0]) == 0 && winstate != "minimized"; SpawnIngr
+	if RAND(PaceSetting[0]) == 0 && winstate != "minimized" && entityCount < 20; "\![get,property,OnSpawnIngr,currentghost.scope(1).x]"
 	--
 	OnRestore
 }
 
-SpawnIngr
+OnCoordCheck
+{
+	reference0
+}
+
+OnSpawnIngr : all
 {
 	if entityCount < 5; entityCount = 5
 	else; entityCount++
@@ -126,13 +131,56 @@ SpawnIngr
 		_index = ASEARCH(_argv[0],ingrName)
 	}
 
-	_offx = 0
+	_curx = reference0
+
+	_charright = _curx - 350
+	if _charright < 50; _charright = 50
+
+	_charleft = _curx + 250
+	if _charleft > displaywidth - 200; _charleft = displaywidth - 200
+
 	entity[entityCount] = _ingredient
 	entitySurface[entityCount] = ingrSurf[_index]
+	_offset = RAND(displaywidth - 200) + 50
+	_offMove = "left.top"
 
-	_offx = RAND(displaywidth - 50 ) + 30
-	--
-	"\p[%(entityCount)]\![move,--X=%(_offx),--time=0,--base=primaryscreen]\![set,alignmenttodesktop,bottom]\p[%(entityCount)]\s[%(entitySurface[entityCount])]\i[100]\![set,alignmenttodesktop,free]"
+	if _offset > _charright && _offset < _charleft
+	{
+		if _charright == 50
+		{
+			_offset = _charright + 550
+			//"1"
+		}
+		elseif _charleft == (displaywidth - 200)
+		{
+			_offset = _charleft - 400
+			//"2"
+			_offMove = "right.bottom"
+		}
+		else
+		{
+			if RAND(2) == 1
+			{
+				_offset = _charright
+				//"3"
+				_offMove = "right.top"
+			}
+			else
+			{
+				_offset = _charleft
+				//"4"
+				_offMove = "left.top"
+			}
+		}
+	}
+	else
+	{
+		//"5"
+	}
+
+	"\p[%(entityCount)]\s[-1]\![move,--X=%(_offset),--time=0,--base=primaryscreen,--move-offset=%(_offMove)]\p[%(entityCount)]\w8\p[%(entityCount)]\s[%(entitySurface[entityCount])]\![set,alignmenttodesktop,bottom]\![set,alignmenttodesktop,free]"
+
+	//_curx + "|" + _charleft  + "|" + _charright  + "|" + _offset
 }
 
 firstSpawn
@@ -154,6 +202,6 @@ firstSpawn
 	entitySurface[entityCount] = ingrSurf[_index]
 
 	--
-	"\p[%(entityCount)]\![move,--X=-250,--time=0,--base=1]\![set,alignmenttodesktop,bottom]\p[%(entityCount)]\s[%(entitySurface[entityCount])]\i[100]\![set,alignmenttodesktop,free]"
+	"\p[%(entityCount)]\![move,--X=-250,--time=0,--base=1]\p[%(entityCount)]\s[%(entitySurface[entityCount])]\i[100]\![set,alignmenttodesktop,free]"
 
 }

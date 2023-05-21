@@ -29,7 +29,13 @@ OnMouseDoubleClick
 			{
 				_entityIndex = ASEARCH(_name,ingrName)
 				entityCount--
+				if entityCount == 4
+				{
+					entity = ""
+					entitySurface = ""
+				}
 				entity[reference3] = ""
+				entitySurface[reference3] = ""
 				--
 				"\p[%(reference3)]\s[-1]\1*"
 				--
@@ -55,7 +61,9 @@ OnMouseDoubleClick
 				if ingrUserName[_entityIndex] == "" || ingrUserName[_entityIndex] == "?????"
 				{
 					ingFoundNum++
-					"\x\p[%(reference3)]What do you want to call this ingredient?\![open,inputbox,OningredientUserName,--reference=%(_entityIndex),--timeout=0]"
+					if Buttons[4] == "ON"; "\x\1What do you want to call this ingredient?\![open,inputbox,OningredientUserName,--reference=%(_entityIndex),--timeout=0]"
+					//elseif Buttons[5] == "ON"; ingrUserName[_index] = ingrSecName[_index]
+					else; ingrUserName[_index] = "ingredient Nr" + NoEmptyARRAYSIZE(ingrUserName)
 				}
 			}
 			elseif "Bottle" _in_ _name
@@ -229,10 +237,15 @@ OnOverlap : all
 				--
 				if "Potion" !_in_ _name && "Bottle" !_in_ _name
 				{
-					if cauldronIngrCount != 3
+					if cauldronIngrCount != 2
 					{
 						_entityIndex = ASEARCH(_name,ingrName)
 						entityCount--
+						if entityCount == 4
+						{
+							entity = IARRAY
+							entitySurface = ""
+						}
 						entity[_temp] = ""
 						entitySurface[_temp] = ""
 						--
@@ -248,21 +261,21 @@ OnOverlap : all
 							cauldronIngr[1] = ingrElement[_entityIndex]
 							cauldronIngrCount++
 						}
-						elseif cauldronIngrCount == 2
+						/*elseif cauldronIngrCount == 2
 						{
 							cauldronIngr[2] = ingrOrigin[_entityIndex]
 							cauldronIngrCount++
-						}
+						}*/
 						
 					}
 					else
 					{
-						"* You already added 3 ingredients "
+						"* You already added 2 ingredients "
 					}
 				}
 				elseif "Bottle" _in_ _name
 				{
-					if cauldronIngrCount != 3
+					if cauldronIngrCount != 2
 					{
 						"* You didn't add all the ingredients "
 					}
@@ -277,13 +290,14 @@ OnOverlap : all
 						cauldronIngr = ("","","")
 						entity[_temp] = caulPotion
 						_entityIndex = ASEARCH(caulPotion,potName)
-						caulPotion = ""
+						//caulPotion = ""
 						if potUserName[_entityIndex] == ""; potUserName[_entityIndex] = "Potion Nr." + NoEmptyARRAYSIZE(potUserName)
 						--
 						"\p[%(_temp)]\s[%(entitySurface[_temp])]\i[0]* Potion Ready!"
 						--
-						if Buttons[2] == "ON"; "\n\n[half]This potion failed"
-						
+						if Buttons[2] == "ON" && caulPotion == "Failed Potion"; "\n\n[half]This potion failed"
+						--
+						caulPotion = ""
 					}
 				}
 			}
@@ -348,14 +362,24 @@ OnPotionEffects : all
 	}
 	--
 	"\0\s[0]\i[501,wait]"
+	_potionIndex = ASEARCH(WitchStatus,potName)
+	if potUsed[_potionIndex] != 1; potUsed[_potionIndex] == 1
 	--
 	_scale = TOINT(nowscale)
 	if WitchStatus == "Small Potion"; _scale -= 50 //\s[0]\i[501,wait]
 	elseif WitchStatus == "Big Potion"; _scale += 50
 	elseif WitchStatus == "Reverse Gravity Potion"; _scale *= -1
 	--
-	if WitchStatus == "Reverse Gravity Potion"; "\0\![set,alignmenttodesktop,top]\![set,scaling,%(_scale)]"
-	else; "\0\![set,alignmenttodesktop,bottom]\![set,alignmenttodesktop,free]"
+	if WitchStatus == "Reverse Gravity Potion"
+	{
+		"\0\![set,alignmenttodesktop,top]\![set,scaling,%(_scale)]"
+		if Flag("Reversed") == 0; AddFlag("Reversed")
+	}
+	elseif Flag("Reversed") == 1
+	{
+		RemoveFlag("Reversed")
+		"\0\![set,alignmenttodesktop,bottom]\![set,alignmenttodesktop,free]"
+	}
 	--
 	if WitchStatus == "Frog Potion"; "\0\s[5004]\i[1000]"
 	elseif WitchStatus == "Dog Potion"; "\0\s[5000]\i[1000]"
@@ -388,4 +412,12 @@ OnPotionEffects : all
 	else; "\0\s[0]\i[1000,wait][neutral]"
 	--
 	"\![set,scaling,%(_scale)]"
+}
+
+OnChoiceHover
+{
+	case reference1
+	{
+		when "OnPlop"; OnBagIngr(reference2)
+	}
 }

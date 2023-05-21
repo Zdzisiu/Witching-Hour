@@ -24,30 +24,46 @@ OnSakuraMenu : all
 
 OnPaceSet : all
 {
-	for _i=0;_i<4;_i++
+	for _i=0;_i<11;_i++
 	{
 		if Buttons[_i] == ""; Buttons[_i] = "OFF"
 	}
+
+	if PaceSetting[5] == ""; PaceSetting[5] = 10
 	--
 
-	"\_q\b2"
+	"\_q\b2\![set,autoscroll,disable]"
 	"**Ingrdidient Spawn chance:** "
-	"\![*]\q[1 in %(PaceSetting[0]),script:\![open,sliderinput,OnPace,30000,2,1,100,--reference=0\]]\n"
-	"=-(lower = more ingredients, higher = less ingredients)-=\n"
+	"==\![*]\q[1 in %(PaceSetting[0]),script:\![open,sliderinput,OnPace,30000,2,1,100,--reference=0\]]==\n"
+	"((=-(lower = more ingredients, higher = less ingredients)-=))\n"
 	
-	"\n[half]**Crystal Ball Check cooldown:**\n"
-	"Ingridients: \![*]\q[%(PaceSetting[1]) min,script:\![open,sliderinput,OnPace,30000,5,1,120,--reference=1\]]\n"
-	"Potions: \![*]\q[%(PaceSetting[2]) min,script:\![open,sliderinput,OnPace,30000,10,1,120,--reference=2\]]\n"
+	"\n[half]**Crystal Ball:**\n"
+	"Ingridient Check Cooldown: ==\![*]\q[%(PaceSetting[1]) min,script:\![open,sliderinput,OnPace,30000,5,1,120,--reference=1\]]==\n"
+	"Verify all ingredients on check: \![*]\_a[OnButton,9]%(Buttons[9])\_a\n"
+	"Potions Check Cooldown: ==\![*]\q[%(PaceSetting[2]) min,script:\![open,sliderinput,OnPace,30000,10,1,120,--reference=2\]]==\n"
+	"Verify all potions on check: \![*]\_a[OnButton,10]%(Buttons[10])\_a\n"
 
 	"\n[half]**Potion duration:**\n"
-	"Min: \![*]\q[%(PaceSetting[3]) min,script:\![open,sliderinput,OnPace,30000,2,1,120,--reference=3\]]\n"
-	"Max: \![*]\q[%(PaceSetting[4]) min,script:\![open,sliderinput,OnPace,30000,5,1,120,--reference=4\]]\n"
-
+	"Min: ==\![*]\q[%(PaceSetting[3]) min,script:\![open,sliderinput,OnPace,30000,2,1,120,--reference=3\]]==\n"
+	"Max: ==\![*]\q[%(PaceSetting[4]) min,script:\![open,sliderinput,OnPace,30000,5,1,120,--reference=4\]]==\n"
+	"\n[half]**Difficulty adjustments:**\n"
 	//"Comunication Potions Affect All: \q[%(Buttons[0]),OnButton,0]\n"
-	"Show True Name When Discovered: \q[%(Buttons[1]),OnButton,1]\n"
-	"Tell me when potion failed: \q[%(Buttons[2]),OnButton,2]\n"
-	"Throw out failed potions: \q[%(Buttons[3]),OnButton,3]\n"
+	"Show True Name When Discovered: \![*]\_a[OnButton,1]%(Buttons[1])\_a\n"
+	"Tell me when potion failed: \![*]\_a[OnButton,2]%(Buttons[2])\_a\n"
+	"Throw out failed potions: \![*]\_a[OnButton,3]%(Buttons[3])\_a\n"
+	"Naming new ingredients: \![*]\_a[OnButton,4]%(Buttons[4])\_a\n"
+	//if Buttons[4] == "ON"; "Use secondary names: \![*]\_a[OnButton,5]%(Buttons[5])\_a\n"
+	
+	"Show ingredient names right away: \![*]\_a[OnButton,6]%(Buttons[6])\_a\n"
+	"Show potion names after usage: \![*]\_a[OnButton,7]%(Buttons[7])\_a\n"
+	"Potions have a chance to fail despite correct recipe: \![*]\_a[OnButton,8]%(Buttons[8])\_a\n"
+	if Buttons[8] == "ON"
+	{
+		"Potions Fail chance: ==\![*]\q[1 in %(PaceSetting[5]),script:\![open,sliderinput,OnPace,30000,10,2,120,--reference=5\]]==\n"
+		"((=-(lower = higher chance, higher = lower chance)-=))\n"
+	}
 
+	"\__q[OnChangelog]**Open Changelog**\__q\n"
 	"\n[half]\![*]\q[Go Back,OnSakuraMenu]\n"
 	"\![*]\q[Nevermind,]"	
 }

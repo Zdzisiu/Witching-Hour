@@ -1,0 +1,19 @@
+v.1.0.1
+- Fixed ingredients spawning on the cauldron (I hope 🥲)
+- Fixed ingredients spawning off screen  (I hope 🥲)
+- Fixed Potions always saying it failed when "Tell me when potion failed" is ON
+- Fixed Lily cloning (I hope 🥲)
+- Fixed some the surfaces and animations
+- Deleted ingredient spawning animation (it caused the overlap box to be bigger than it should be, ingredients will get all their own spawn animation someday)
+- Added Settings and functionality for
+    - Showing ingredient names right away (Default OFF)
+    - Show potion names after usage (Default OFF)
+    - Potions have a chance to fail despite correct recipes (Default OFF)
+        - Fail chance (Default 1 in 10)
+    - Verify all ingredients when verifying with the crystal ball (Default OFF)
+    - Verify all potions when verifying with the crystal ball (Default OFF)
+    - Name ingredients (Default OFF) (Ingredients are auto numbered)
+- Highlight names of ingredients and potions that have been correctly filled out
+- Don't show ingredients and potions that have already been correctly filled out when checking with the crystal ball
+- Deleted origin, now there are only 2 ingredients needed and a way lower chance of failing a potion (only 11 failing recipes)
+- Added ingrdient images for bag (On hover) and in grimoire (in their respecitve pages)

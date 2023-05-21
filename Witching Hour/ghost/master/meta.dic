@@ -72,8 +72,13 @@ OnUpdateComplete
 	}
 	else
 	{
-		"\0\s[0]Update complete."
+		"\0\s[0]Open changelog?\n\q[Yes,OnChangelog] | \q[No,]"
 	}
+}
+
+OnChangelog
+{
+	"\![open,file,Changelog.txt]"
 }
 
 //reference0 is the reason the update failed

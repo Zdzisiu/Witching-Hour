@@ -2,20 +2,20 @@ OnFinishPotion : all
 {
 	"\1\s[10]\i[15]"
 	--
-	if cauldronIngrCount == 3 && stirred != 1
+	if cauldronIngrCount == 2 && stirred != 1
 	{
 		stirred = 1
 		_potReq = IARRAY
-		_caulIngrCheck = cauldronIngr[0] + "," + cauldronIngr[1] + "," + cauldronIngr[2] 
+		_caulIngrCheck = cauldronIngr[0] + "," + cauldronIngr[1] //+ "," + cauldronIngr[2] 
 
 		for _i = 0; _i < ARRAYSIZE(potReqCategory); _i++
 		{
-			_potReq ,= potReqCategory[_i] + "," + potReqElement[_i] + ","  + potReqOrigin[_i]
+			_potReq ,= potReqCategory[_i] + "," + potReqElement[_i] //+ ","  + potReqOrigin[_i]
 		}
 
 		_potionIndex = ASEARCH(_caulIngrCheck,_potReq)
 
-		if _potionIndex == -1 || potName[_potionIndex] == "Plant Potion" || potName[_potionIndex] == "Anima Potion" || potName[_potionIndex] == "Snow Potion" || potName[_potionIndex] == "Wind Potion" || potName[_potionIndex] == "Truth Potion" || potName[_potionIndex] == "Love Potion" || potName[_potionIndex] == "Anger Potion" || potName[_potionIndex] == "Happiness Potion" || potName[_potionIndex] == "Sad Potion" || potName[_potionIndex] == "Nauseous Potion" || potName[_potionIndex] == "Excited Potion" || potName[_potionIndex] == "Embarrassed Potion" || potName[_potionIndex] == "Money Potion" || potName[_potionIndex] == "Luck Potion" || potName[_potionIndex] == "Bad Luck Potion" || potName[_potionIndex] == "Bubble Potion" || potName[_potionIndex] == "Hiccups Potion" || potName[_potionIndex] == "Confetti Potion" || potName[_potionIndex] == "Sparkle Potion"
+		if _potionIndex == -1 || (RAND(PaceSetting[5]) == 1 && Buttons[8] == "ON")
 		{
 			caulPotion = "Failed Potion"
 		}
@@ -29,7 +29,9 @@ OnFinishPotion : all
 		cauldronIngrCount = 0
 	}
 	--
-	WitchSur + "[mocking]Another failed one, probably" 
+	_potionIndex
+	//--
+	//WitchSur + "[mocking]Another failed one, probably" 
 }
 
 OnBookMenu : all
@@ -63,17 +65,17 @@ OnExplain : all
 	"\p[2]\b[2]\b2\f[align,center]\![set,balloontimeout,0]"
 	if reference0 == "potion making"
 	{
-		"**Potion Making**\n\n[half]\f[align,default]1. Gather 3 ingredients \n((by double clicking on them))\n2. Take them out of your bag \n((by double clicking the bag and navigating the menu))\n3. Drop them into your cauldron \n((by dragging them on to the cauldron))\n4. Stir you mixture \n((By clicking on the laddle))\n5. Carefully take your potion bottle \n((by clicking on the potion bottle on the shelf))\n6. Bottle your potion \n((by dragging it on to the cauldron))\n7. Testing! \n((By draggin the potion on to the witch))"
+		"**Potion Making**\n\n[half]\f[align,default]1. Gather 2 ingredients \n((by double clicking on them))\n2. Take them out of your bag \n((by double clicking the bag and navigating the menu))\n3. Drop them into your cauldron \n((by dragging them on to the cauldron))\n4. Stir you mixture \n((By clicking on the laddle))\n5. Carefully take your potion bottle \n((by clicking on the potion bottle on the shelf))\n6. Bottle your potion \n((by dragging it on to the cauldron))\n7. Testing! \n((By draggin the potion on to the witch))"
 		"\1Experiment with different ingredients to discover %(potnum) potions!\n"
 	}
 	elseif reference0 == "academy"
 	{
-		"**Arcane Academy**\n\n[half]\f[align,default]Arcane Institute of Witchcraft is known as the first institute for learning witchcraft, students can be of any age and one class often has a wide range of ages. It is surrounded by a forest, which is often used for training. After at least 4 years of learning magic, the students are with no exceptions send for an \_a[apprentice]apprenticeship\_a where the witch in charge of them decided when they are ready to get the final exam to get their \_a[license]license\_a.\n\n[half]Attending the institute is free, however any additional supplies have to be bought by the students and their family. As the oldest Institute of Witchcraft, it follows the \_a[rules]Ancient Rules\_a set in place by the first headmaster.\n"
+		"**Arcane Academy**\n\n[half]\f[align,default]Arcane Institute of Witchcraft is known as the first institute for learning witchcraft, students can be of any age and one class often has a wide range of ages. It is surrounded by a forest, which is often used for training. After at least 4 years of learning magic, the students are with no exceptions send for an \_a[OnExplain,apprentice]apprenticeship\_a where the witch in charge of them decided when they are ready to get the final exam to get their \_a[OnExplain,license]license\_a.\n\n[half]Attending the institute is free, however any additional supplies have to be bought by the students and their family. As the oldest Institute of Witchcraft, it follows the \_a[OnExplain,rules]Ancient Rules\_a set in place by the first headmaster.\n"
 	}
 	elseif reference0 == "traits"
 	{
-		"**Ingredient Traits**\n\n[half]\f[align,default]Each ingridient has 3 traits: A category, an element and an origin. Those traits decide what potion is made. You can document those trait in your \_a[book]grimoire\_a."
-		"\1\b2\f[align,center]**Potion Recipes**\n\n[half]\f[align,default]Each potion takes on one trait of the ingredient, depending on the order of adding them to the cauldron.\n[half]\n1. Category\n2. Element\n3. Origin\n\n[half]You can document which traits are needed for which potion in your \_a[book]grimoire\_a.\n"
+		"**Ingredient Traits**\n\n[half]\f[align,default]Each ingridient has 2 traits: A category, and element. Those traits decide what potion is made. You can document those trait in your \_a[OnExplain,book]grimoire\_a."
+		"\1\b2\f[align,center]**Potion Recipes**\n\n[half]\f[align,default]Each potion takes on one trait of the ingredient, depending on the order of adding them to the cauldron.\n[half]\n1. Category\n2. Element\n\n[half]You can document which traits are needed for which potion in your \_a[OnExplain,book]grimoire\_a.\n"
 	}
 	elseif reference0 == "ball"
 	{
@@ -85,20 +87,20 @@ OnExplain : all
 	}
 	elseif reference0 == "elders"
 	{
-		"**Elder Witch**\n\n[half]\f[align,default]A witch that, after getting a \_a[license]license\_a, helped to significantly progress the understanding of magic or achieved a great deed using magic recognized by the High Council.\n"
+		"**Elder Witch**\n\n[half]\f[align,default]A witch that, after getting a \_a[OnExplain,license]license\_a, helped to significantly progress the understanding of magic or achieved a great deed using magic recognized by the High Council.\n"
 	}
 	elseif reference0 == "apprentice"
 	{
-		"**Apprenticeship**\n\n[half]\f[align,default]Apprenticeship is a requirement for all witches from \_a[academy]Arcane Institute of Witchcraft\_a and those that lost their \_a[license]license\_a or used magic outside of an institute without having it. It is meant to teach them about the use of magic in real life situations. The apprenticeship has no time limit, it is up to the witch leading it when it ends. \_a[elders]Elder Witches\_a are often assigned the _problematic_ witches, as they are seen as the most responsible considering their achievements.\n\n[half]Apprenticeship with an Elder Witch lasts until they decide that the apprentice is responsible enough to get a \_a[license]license\_a. However, in some instances the apprenticeship is basically permanent, as the apprentice is seen as unredeemable. The apprentices have to follow their witches words as they are bound by a sigil. The sigil that each student has when entering an apprenticeship disallows them from disobeying their mentor. The only way to leave the apprenticeship is to resign from the license, but that is synonymous with never being able to use magic again until one tries to pass an apprenticeship again or enter another institute, where the anicent rules do not apply\n"
-		"\1\b2\f[align,center]**Discipleship**\n\n[half]\f[align,default]Disciples are a sort of privilege for an \_a[elders]Elder Witches\_a, after gaining a title, they are allowed to accept disciples, the discipleship itself is just like an apprenticeship, with the main difference being that a disciple of an \_a[elders]Elder witche\_a is not required to attend an institute to get their \_a[license]license\_a.\n"
+		"**Apprenticeship**\n\n[half]\f[align,default]Apprenticeship is a requirement for all witches from \_a[OnExplain,academy]Arcane Institute of Witchcraft\_a and those that lost their \_a[OnExplain,license]license\_a or used magic outside of an institute without having it. It is meant to teach them about the use of magic in real life situations. The apprenticeship has no time limit, it is up to the witch leading it when it ends. \_a[OnExplain,elders]Elder Witches\_a are often assigned the _problematic_ witches, as they are seen as the most responsible considering their achievements.\n\n[half]Apprenticeship with an Elder Witch lasts until they decide that the apprentice is responsible enough to get a \_a[OnExplain,license]license\_a. However, in some instances the apprenticeship is basically permanent, as the apprentice is seen as unredeemable. The apprentices have to follow their witches words as they are bound by a sigil. The sigil that each student has when entering an apprenticeship disallows them from disobeying their mentor. The only way to leave the apprenticeship is to resign from the license, but that is synonymous with never being able to use magic again until one tries to pass an apprenticeship again or enter another institute, where the anicent rules do not apply\n"
+		"\1\b2\f[align,center]**Discipleship**\n\n[half]\f[align,default]Disciples are a sort of privilege for an \_a[OnExplain,elders]Elder Witches\_a, after gaining a title, they are allowed to accept disciples, the discipleship itself is just like an apprenticeship, with the main difference being that a disciple of an \_a[OnExplain,elders]Elder witche\_a is not required to attend an institute to get their \_a[OnExplain,license]license\_a.\n"
 	}
 	elseif reference0 == "rules"
 	{
-		"**Ancient Rules**\n\n[half]\f[align,default]The rules set in place by the first headmaster of \_a[academy]Arcane Institute of Witchcraft\_a, those rules cannot be revoked or broken, as they are protected by strong magic. The most known rule is 'anyone has the right to learn' which forbids rejecting students, no matter the age, background or experience. This rule also forbids expulsion of students, no matter what they do, which before magic was normalized was meant to protect from discrimination, nowadays, it only causes problems to staff.\n\n[half]Because of this rule, \_a[academy]Arcane Institute of Witchcraft\_a requires students to go through a process of \_a[apprentice]apprenticeship\_a, it is a loophole to not allow students that otherwise would have been expelled from acquiring a \_a[license]license\_a. The institute has a mutual contract with many \_a[elders]Elder Witches\_a, in which the institute sends them apprentices that the \_a[elders]Elder Witches\_a try and redeem or if that doesn't work, just use as free help around their workshop or testing guinea pigs until the apprentice gives up trying to get a \_a[license]license\_a.\n"
+		"**Ancient Rules**\n\n[half]\f[align,default]The rules set in place by the first headmaster of \_a[OnExplain,academy]Arcane Institute of Witchcraft\_a, those rules cannot be revoked or broken, as they are protected by strong magic. The most known rule is 'anyone has the right to learn' which forbids rejecting students, no matter the age, background or experience. This rule also forbids expulsion of students, no matter what they do, which before magic was normalized was meant to protect from discrimination, nowadays, it only causes problems to staff.\n\n[half]Because of this rule, \_a[OnExplain,academy]Arcane Institute of Witchcraft\_a requires students to go through a process of \_a[OnExplain,apprentice]apprenticeship\_a, it is a loophole to not allow students that otherwise would have been expelled from acquiring a \_a[OnExplain,license]license\_a. The institute has a mutual contract with many \_a[OnExplain,elders]Elder Witches\_a, in which the institute sends them apprentices that the \_a[OnExplain,elders]Elder Witches\_a try and redeem or if that doesn't work, just use as free help around their workshop or testing guinea pigs until the apprentice gives up trying to get a \_a[OnExplain,license]license\_a.\n"
 	}
 	elseif reference0 == "license"
 	{
-		"**Magic License**\n\n[half]\f[align,default]The Magic License is a document allowing the use of magic outside of a learning environment. To get a license, one must first attend a magic institute or become a \_a[apprentice]disciple\_a, and in the case of going to \_a[academy]Arcane Institute of Witchcraft\_a one must also pass an \_a[apprentice]apprenticeship\_a with a licensed witch.\n"
+		"**Magic License**\n\n[half]\f[align,default]The Magic License is a document allowing the use of magic outside of a learning environment. To get a license, one must first attend a magic institute or become a \_a[OnExplain,apprentice]disciple\_a, and in the case of going to \_a[OnExplain,academy]Arcane Institute of Witchcraft\_a one must also pass an \_a[OnExplain,apprentice]apprenticeship\_a with a licensed witch.\n"
 	}
 
 	"\n[half]\![*]\q[Previous page,OnGlossary]\n"
@@ -140,10 +142,15 @@ OnPotionMenu : all
 	{
 		if potUserName[_i] != ""
 		{
-			if "_[o]" _in_ potUserReqCategory[_i] && "_[o]" _in_ potUserReqElement[_i] && "_[o]" _in_ potUserReqOriging[_i]; _nameFound = 1
+			//if "_[o]" _in_ potUserReqCategory[_i] && "_[o]" _in_ potUserReqElement[_i] && "_[o]" _in_ potUserReqOriging[_i]; _nameFound = 1
+			if "_[o]" _in_ potUserReqCategory[_i] && "_[o]" _in_ potUserReqElement[_i]; _nameFound = 1
 			else; _nameFound = 0
 
-			if _nameFound == 1; "\![*]\__q[OnPotionPage," + _i + "]" +  _j + "." + TOPROPER(potName[_i]) + "\__q\n"
+			if Buttons[1] == "ON" && _nameFound == 1 || Buttons[7] == "ON" && potUsed[_i] == 1
+			{
+				if _nameFound == 1; "==\![*]\__q[OnPotionPage," + _i + "]" +  _j + "." + TOPROPER(potName[_i]) + "\__q==\n"
+				else; "\![*]\__q[OnPotionPage," + _i + "]" +  _j + "." + TOPROPER(potName[_i]) + "\__q\n"
+			}
 			else; "\![*]\__q[OnPotionPage," + _i + "]" +  _j + "." + TOPROPER(potUserName[_i]) + "\__q\n"
 			_j++
 		}
@@ -158,15 +165,16 @@ OnPotionPage : all
 	_nameFound = 0
 	if potUserReqCategory[_index] == ""; potUserReqCategory[_index] = "?????"
 	if potUserReqElement[_index] == ""; potUserReqElement[_index] = "?????"
-	if potUserReqOriging[_index] == ""; potUserReqOriging[_index] = "?????"
+	//if potUserReqOriging[_index] == ""; potUserReqOriging[_index] = "?????"
 	--
 	"\b2\_q\![set,autoscroll,disable]"
 
-	if "_[o]" _in_ potUserReqCategory[_index] && "_[o]" _in_ potUserReqElement[_index] && "_[o]" _in_ potUserReqOriging[_index]; _nameFound = 1
+	//if "_[o]" _in_ potUserReqCategory[_index] && "_[o]" _in_ potUserReqElement[_index] && "_[o]" _in_ potUserReqOriging[_index]; _nameFound = 1
+	if "_[o]" _in_ potUserReqCategory[_index] && "_[o]" _in_ potUserReqElement[_index]; _nameFound = 1
 	else; _nameFound = 0
 
 	"\f[align,center]-=**\__q[OnPotNameChange,%(_index)]%(TOUPPER(potUserName[_index]))**=-\__q\n"
-	if _nameFound == 1; "=-_%(potName[_index])_-=\n\n[half]"
+	if _nameFound == 1 || ( Buttons[7] == "ON" && potUsed[_index] == 1 ); "=-_%(potName[_index])_-=\n\n[half]"
 	else; "=-_??????_-=\n\n[half]"
 	"\f[align,default]RECIPE:\n"
 	"=-**Category**: "
@@ -177,10 +185,10 @@ OnPotionPage : all
 	if "_[o]" _in_ potUserReqElement[_index]; "==%(REPLACE(potUserReqElement[_index],'_[o]',''))==\n"
 	elseif "_[x]" _in_ potUserReqElement[_index]; "\__q[OnPotChange,element,%(_index)]~~%(REPLACE(potUserReqElement[_index],'_[x]',''))~~\__q\n"
 	else; "\__q[OnPotChange,element,%(_index)]%(potUserReqElement[_index])\__q\n"
-	"**Origin**: "
+	/*"**Origin**: "
 	if "_[o]" _in_ potUserReqOriging[_index]; "==%(REPLACE(potUserReqOriging[_index],'_[o]',''))==\n"
 	elseif "_[x]" _in_ potUserReqOriging[_index]; "\__q[OnPotChange,origin,%(_index)]~~%(REPLACE(potUserReqOriging[_index],'_[x]',''))~~\__q\n"
-	else; "\__q[OnPotChange,origin,%(_index)]%(potUserReqOriging[_index])\__q\n"
+	else; "\__q[OnPotChange,origin,%(_index)]%(potUserReqOriging[_index])\__q\n"*/
 	"-=\n\n\n[half]\![*]\q[Previous page,OnPotionMenu]\n"
 	"\n[half]\![*]\q[Close the grimoire,]\n"
 }
@@ -263,15 +271,20 @@ OnSetPot
 
 OnIngredientMenu : all
 {
-	"\_q\p[2]\b2\![set,autoscroll,disable]\f[align,center] **Found ingredients**:\n\n[half]\f[align,default]"
+	"\_q\p[2]\b2\*\![set,autoscroll,disable]\f[align,center] **Found ingredients**:\n\n[half]\f[align,default]"
 	for _i = 0, _j = 1, _nameFound = 0; _i < ARRAYSIZE(ingrName);_i++
 	{
 		if ingrUserName[_i] != ""
 		{
-			if "_[o]" _in_ ingrUserCategory[_i] && "_[o]" _in_ ingrUserElement[_i] && "_[o]" _in_ ingrUserOrigin[_i]; _nameFound = 1
+			//if "_[o]" _in_ ingrUserCategory[_i] && "_[o]" _in_ ingrUserElement[_i] && "_[o]" _in_ ingrUserOrigin[_i]; _nameFound = 1
+			if "_[o]" _in_ ingrUserCategory[_i] && "_[o]" _in_ ingrUserElement[_i]; _nameFound = 1
 			else; _nameFound = 0
 
-			if _nameFound == 1; "\![*]\__q[OnIngredientPage," + _i + "]" +  _j + "." + TOPROPER(ingrName[_i]) + "\__q\n"
+			if Buttons[1] == "ON" && _nameFound == 1 || Buttons[6] == "ON"
+			{
+				if _nameFound == 1; "==\![*]\__q[OnIngredientPage," + _i + "]" +  _j + "." + TOPROPER(ingrName[_i]) + "\__q==\n"
+				else; "\![*]\__q[OnIngredientPage," + _i + "]" +  _j + "." + TOPROPER(ingrName[_i]) + "\__q\n"
+			}
 			else; "\![*]\__q[OnIngredientPage," + _i + "]" +  _j + "." + TOPROPER(ingrUserName[_i]) + "\__q\n"
 			_j++
 		}
@@ -286,14 +299,15 @@ OnIngredientPage : all
 	_nameFound = 0
 	if ingrUserCategory[_index] == ""; ingrUserCategory[_index] = "?????"
 	if ingrUserElement[_index] == ""; ingrUserElement[_index] = "?????"
-	if ingrUserOrigin[_index] == ""; ingrUserOrigin[_index] = "?????"
+	//if ingrUserOrigin[_index] == ""; ingrUserOrigin[_index] = "?????"
 	--
-	"\p[2]\b2\_q\![set,autoscroll,disable]"
-	if "_[o]" _in_ ingrUserCategory[_index] && "_[o]" _in_ ingrUserElement[_index] && "_[o]" _in_ ingrUserOrigin[_index]; _nameFound = 1
+	"\p[2]\b2\_q\![set,autoscroll,disable]\f[align,center]\_b[img/grimoire/%(_index).png,inline,--option=use_self_alpha]\f[default]\n"
+	//if "_[o]" _in_ ingrUserCategory[_index] && "_[o]" _in_ ingrUserElement[_index] && "_[o]" _in_ ingrUserOrigin[_index]; _nameFound = 1
+	if "_[o]" _in_ ingrUserCategory[_index] && "_[o]" _in_ ingrUserElement[_index]; _nameFound = 1
 	else; _nameFound = 0
 
 	"\f[align,center]-=**\__q[OnIngrNameChange,%(_index)]%(TOUPPER(ingrUserName[_index]))**=-\__q\n"
-	if _nameFound == 1; "=-_%(ingrName[_index])_-=\n\n[half]"
+	if _nameFound == 1 || Buttons[6] == "ON"; "=-_%(ingrName[_index])_-=\n\n[half]"
 	else; "=-_??????_-=\n\n[half]"
 	"\f[align,default]**Category**: "
 	if "_[o]" _in_ ingrUserCategory[_index]; "==%(REPLACE(ingrUserCategory[_index],'_[o]',''))==\n"
@@ -303,10 +317,10 @@ OnIngredientPage : all
 	if "_[o]" _in_ ingrUserElement[_index]; "==%(REPLACE(ingrUserElement[_index],'_[o]',''))==\n"
 	elseif "_[x]" _in_ ingrUserElement[_index]; "\__q[OnIngrChange,element,%(_index)]~~%(REPLACE(ingrUserElement[_index],'_[x]',''))~~\__q\n"
 	else; "\__q[OnIngrChange,element,%(_index)]%(ingrUserElement[_index])\__q\n"
-	"**Origin**: "
+	/*"**Origin**: "
 	if "_[o]" _in_ ingrUserOrigin[_index]; "==%(REPLACE(ingrUserOrigin[_index],'_[o]',''))==\n"
 	elseif "_[x]" _in_ ingrUserOrigin[_index]; "\__q[OnIngrChange,origin,%(_index)]~~%(REPLACE(ingrUserOrigin[_index],'_[x]',''))~~\__q\n"
-	else; "\__q[OnIngrChange,origin,%(_index)]%(ingrUserOrigin[_index])\__q\n"
+	else; "\__q[OnIngrChange,origin,%(_index)]%(ingrUserOrigin[_index])\__q\n"*/
 	"**Description**:\n"
 	if _nameFound == 1; ingrDesc[_index]
 	else; "_?????_"
@@ -422,25 +436,115 @@ OnHint : all
 {
 	if reference0 == "ingr"
 	{
-		"\p[2]\_q\p[2]\b2\![set,autoscroll,disable] **Which ingredient do you want to identify?**:\n\n[half]"
-		for _i = 0, _j = 1; _i < ARRAYSIZE(ingrName);_i++
+		if Buttons[9] == "ON"
 		{
-			if ingrUserName[_i] != ""
+			for _i = 0, _j = 1; _i < ARRAYSIZE(ingrName);_i++
 			{
-				"\![*]\__q[OnCheck," + _i + ",ing]" +  _j + "." + TOPROPER(ingrUserName[_i]) + "\__q\n"
-				_j++
+				if ingrUserName[_i] != ""
+				{	
+					_index = _i
+
+					if ingrUserCategory[_index] == ""; ingrUserCategory[_index] = "?????"
+					if ingrUserElement[_index] == ""; ingrUserElement[_index] = "?????"
+					//if ingrUserOrigin[_index] == ""; ingrUserOrigin[_index] = "?????"
+					
+					ingrUserCategory[_index] = REPLACE(ingrUserCategory[_index],'_[o]','')
+					ingrUserElement[_index] = REPLACE(ingrUserElement[_index],'_[o]','')
+					//ingrUserOrigin[_index] = REPLACE(ingrUserOrigin[_index],'_[o]','')
+
+					ingrUserCategory[_index] = REPLACE(ingrUserCategory[_index],'_[x]','')
+					ingrUserElement[_index] = REPLACE(ingrUserElement[_index],'_[x]','')
+					//ingrUserOrigin[_index] = REPLACE(ingrUserOrigin[_index],'_[x]','')
+
+					if ingrUserCategory[_index] == ingrCategory[_index]; ingrUserCategory[_index] += "_[o]"
+					else; ingrUserCategory[_index] += "_[x]"
+
+					if ingrUserElement[_index] == ingrElement[_index]; ingrUserElement[_index] += "_[o]"
+					else; ingrUserElement[_index] += "_[x]"
+
+					//if ingrUserOrigin[_index] == ingrOrigin[_index]; ingrUserOrigin[_index] += "_[o]"
+					//else; ingrUserOrigin[_index] += "_[x]"
+				}
+			}
+			--
+			timers[0] = 0
+			ballStatus = 0
+			--
+			"\p[2]\s[2]\i[%(ballStatus)]"
+			--
+			"\![raise,OnIngredientMenu]"
+		}
+		else
+		{
+			"\p[2]\_q\p[2]\b2\![set,autoscroll,disable] **Which ingredient do you want to identify?**:\n\n[half]"
+			for _i = 0, _j = 1,_nameFound = 0; _i < ARRAYSIZE(ingrName);_i++
+			{
+				if "_[o]" _in_ ingrUserCategory[_i] && "_[o]" _in_ ingrUserElement[_i]; _nameFound = 1
+				else; _nameFound = 0
+
+				if ingrUserName[_i] != "" && _nameFound != 1
+				{
+					if  Buttons[6] == "ON"; "\![*]\__q[OnCheck," + _i + ",ing]" +  _j + "." + TOPROPER(ingrName[_i]) + "\__q\n"
+					else; "\![*]\__q[OnCheck," + _i + ",ing]" +  _j + "." + TOPROPER(ingrUserName[_i]) + "\__q\n"
+					_j++
+				}
 			}
 		}
 	}
 	else
 	{
-		"\p[2]\_q\p[2]\b2\![set,autoscroll,disable] **Which ingredient do you want to identify?**:\n\n[half]"
-		for _i = 0, _j = 1; _i < ARRAYSIZE(potName);_i++
+		if Buttons[10] == "ON"
 		{
-			if potUserName[_i] != ""
+			for _i = 0, _j = 1; _i < ARRAYSIZE(ingrName);_i++
 			{
-				"\![*]\__q[OnCheck," + _i + ",pot]" +  _j + "." + TOPROPER(potUserName[_i]) + "\__q\n"
-				_j++
+				if ingrUserName[_i] != ""
+				{
+					_index = _i
+
+					if potUserReqCategory[_index] == ""; potUserReqCategory[_index] = "?????"
+					if potUserReqElement[_index] == ""; potUserReqElement[_index] = "?????"
+					//if potUserReqOriging[_index] == ""; potUserReqOriging[_index] = "?????"
+					
+					potUserReqCategory[_index] = REPLACE(potUserReqCategory[_index],'_[o]','')
+					potUserReqElement[_index] = REPLACE(potUserReqElement[_index],'_[o]','')
+					//potUserReqOriging[_index] = REPLACE(potUserReqOriging[_index],'_[o]','')
+
+					potUserReqCategory[_index] = REPLACE(potUserReqCategory[_index],'_[x]','')
+					potUserReqElement[_index] = REPLACE(potUserReqElement[_index],'_[x]','')
+					//potUserReqOriging[_index] = REPLACE(potUserReqOriging[_index],'_[x]','')
+
+					if potUserReqCategory[_index] == potReqCategory[_index]; potUserReqCategory[_index] += "_[o]"
+					else; potUserReqCategory[_index] += "_[x]"
+
+					if potUserReqElement[_index] == potReqElement[_index]; potUserReqElement[_index] += "_[o]"
+					else; potUserReqElement[_index] += "_[x]"
+
+					//if potUserReqOriging[_index] == potReqOrigin[_index]; potUserReqOriging[_index] += "_[o]"
+					//else; potUserReqOriging[_index] += "_[x]"
+				}
+			}
+
+			timers[0] = 0
+			ballStatus = 0
+			--
+			"\p[2]\s[2]\i[%(ballStatus)]"
+			--
+			"\![raise,OnPotionMenu]"
+		}
+		else
+		{
+			"\p[2]\_q\p[2]\b2\![set,autoscroll,disable] **Which potion do you want to verify?**:\n\n[half]"
+			for _i = 0, _j = 1,_nameFound = 0; _i < ARRAYSIZE(potName);_i++
+			{
+				if "_[o]" _in_ potUserReqCategory[_i] && "_[o]" _in_ potUserReqElement[_i]; _nameFound = 1
+				else; _nameFound = 0
+
+				if potUserName[_i] != "" && _nameFound != 1
+				{
+					if Buttons[7] == "ON" && potUsed[_i] == 1; "\![*]\__q[OnCheck," + _i + ",pot]" +  _j + "." + TOPROPER(potName[_i]) + "\__q\n"
+					else; "\![*]\__q[OnCheck," + _i + ",pot]" +  _j + "." + TOPROPER(potUserName[_i]) + "\__q\n"
+					_j++
+				}
 			}
 		}
 	}
@@ -454,15 +558,15 @@ OnCheck
 
 		if ingrUserCategory[_index] == ""; ingrUserCategory[_index] = "?????"
 		if ingrUserElement[_index] == ""; ingrUserElement[_index] = "?????"
-		if ingrUserOrigin[_index] == ""; ingrUserOrigin[_index] = "?????"
+		//if ingrUserOrigin[_index] == ""; ingrUserOrigin[_index] = "?????"
 		
 		ingrUserCategory[_index] = REPLACE(ingrUserCategory[_index],'_[o]','')
 		ingrUserElement[_index] = REPLACE(ingrUserElement[_index],'_[o]','')
-		ingrUserOrigin[_index] = REPLACE(ingrUserOrigin[_index],'_[o]','')
+		//ingrUserOrigin[_index] = REPLACE(ingrUserOrigin[_index],'_[o]','')
 
 		ingrUserCategory[_index] = REPLACE(ingrUserCategory[_index],'_[x]','')
 		ingrUserElement[_index] = REPLACE(ingrUserElement[_index],'_[x]','')
-		ingrUserOrigin[_index] = REPLACE(ingrUserOrigin[_index],'_[x]','')
+		//ingrUserOrigin[_index] = REPLACE(ingrUserOrigin[_index],'_[x]','')
 
 		if ingrUserCategory[_index] == ingrCategory[_index]; ingrUserCategory[_index] += "_[o]"
 		else; ingrUserCategory[_index] += "_[x]"
@@ -470,8 +574,8 @@ OnCheck
 		if ingrUserElement[_index] == ingrElement[_index]; ingrUserElement[_index] += "_[o]"
 		else; ingrUserElement[_index] += "_[x]"
 
-		if ingrUserOrigin[_index] == ingrOrigin[_index]; ingrUserOrigin[_index] += "_[o]"
-		else; ingrUserOrigin[_index] += "_[x]"
+		//if ingrUserOrigin[_index] == ingrOrigin[_index]; ingrUserOrigin[_index] += "_[o]"
+		//else; ingrUserOrigin[_index] += "_[x]"
 
 		timers[0] = 0
 		ballStatus = 0
@@ -486,15 +590,15 @@ OnCheck
 
 		if potUserReqCategory[_index] == ""; potUserReqCategory[_index] = "?????"
 		if potUserReqElement[_index] == ""; potUserReqElement[_index] = "?????"
-		if potUserReqOriging[_index] == ""; potUserReqOriging[_index] = "?????"
+		//if potUserReqOriging[_index] == ""; potUserReqOriging[_index] = "?????"
 		
 		potUserReqCategory[_index] = REPLACE(potUserReqCategory[_index],'_[o]','')
 		potUserReqElement[_index] = REPLACE(potUserReqElement[_index],'_[o]','')
-		potUserReqOriging[_index] = REPLACE(potUserReqOriging[_index],'_[o]','')
+		//potUserReqOriging[_index] = REPLACE(potUserReqOriging[_index],'_[o]','')
 
 		potUserReqCategory[_index] = REPLACE(potUserReqCategory[_index],'_[x]','')
 		potUserReqElement[_index] = REPLACE(potUserReqElement[_index],'_[x]','')
-		potUserReqOriging[_index] = REPLACE(potUserReqOriging[_index],'_[x]','')
+		//potUserReqOriging[_index] = REPLACE(potUserReqOriging[_index],'_[x]','')
 
 		if potUserReqCategory[_index] == potReqCategory[_index]; potUserReqCategory[_index] += "_[o]"
 		else; potUserReqCategory[_index] += "_[x]"
@@ -502,8 +606,8 @@ OnCheck
 		if potUserReqElement[_index] == potReqElement[_index]; potUserReqElement[_index] += "_[o]"
 		else; potUserReqElement[_index] += "_[x]"
 
-		if potUserReqOriging[_index] == potReqOrigin[_index]; potUserReqOriging[_index] += "_[o]"
-		else; potUserReqOriging[_index] += "_[x]"
+		//if potUserReqOriging[_index] == potReqOrigin[_index]; potUserReqOriging[_index] += "_[o]"
+		//else; potUserReqOriging[_index] += "_[x]"
 
 		timers[0] = 0
 		ballStatus = 0
@@ -530,10 +634,10 @@ OnBagIngr : all
 	if TOINT(_countIngr) > 0
 	{
 		"\p[2]\b2\![set,autoscroll,disable]\_q* Which ingredients do you want to add?\n\n"
-
 		for _i = 0; _i < ARRAYSIZE(ingrName);_i++
 		{
-			if "_[o]" _in_ ingrUserCategory[_i] && "_[o]" _in_ ingrUserElement[_i] && "_[o]" _in_ ingrUserOrigin[_i]; _nameFound = 1
+			//if "_[o]" _in_ ingrUserCategory[_i] && "_[o]" _in_ ingrUserElement[_i] && "_[o]" _in_ ingrUserOrigin[_i]; _nameFound = 1
+			if "_[o]" _in_ ingrUserCategory[_i] && "_[o]" _in_ ingrUserElement[_i] ; _nameFound = 1
 			else; _nameFound = 0
 
 			if ingrUserName[_i] == "" && bagIngr[_i] != 0; ingrUserName[_i] = "ingredient Nr." + NoEmptyARRAYSIZE(ingrUserName)
@@ -541,7 +645,7 @@ OnBagIngr : all
 
 			if bagIngr[_i] != 0
 			{
-				if Buttons[1] == "ON" && _nameFound == 1; "\![*]\__q[OnPlop,%(_i)] Add %(ingrName[_i]) (%(bagIngr[_i]))\__q\n"
+				if Buttons[1] == "ON" && _nameFound == 1 || Buttons[6] == "ON"; "\![*]\__q[OnPlop,%(_i)] Add %(ingrName[_i]) (%(bagIngr[_i]))\__q\n"
 				else; "\![*]\__q[OnPlop,%(_i)] Add %(ingrUserName[_i]) (%(bagIngr[_i]))\__q\n"
 			}
 		}
@@ -551,7 +655,17 @@ OnBagIngr : all
 		"* You don't have any ingredients "
 	}
 	--
-	"\n\n[half]\![*]\q[Close the bag,]\e"
+	"\n\n[half]\![*]\q[Close the bag,]"
+	if _argv[0] != "" 
+	{
+		"\1\f[align,center]\f[height,+5]"
+		if "_[o]" _in_ ingrUserCategory[_argv[0]] && "_[o]" _in_ ingrUserElement[_argv[0]] ; _nameFound = 1
+			else; _nameFound = 0
+		if Buttons[1] == "ON" && _nameFound == 1 || Buttons[6] == "ON"; "**%(ingrName[_argv[0]])**\n"
+		else; "**%(ingrUserName[_argv[0]])**\n"
+		"\_b[img/bag/%(_argv[0]).png,inline,--option=use_self_alpha]\n\f[default]"
+	}
+
 }
 
 
@@ -566,7 +680,8 @@ OnBagPot : all
 
 		for _i = 0; _i < ARRAYSIZE(potName);_i++
 		{
-			if "_[o]" _in_ potUserReqCategory[_i] && "_[o]" _in_ potUserReqElement[_i] && "_[o]" _in_ potUserReqOriging[_i]; _nameFound = 1
+			//if "_[o]" _in_ potUserReqCategory[_i] && "_[o]" _in_ potUserReqElement[_i] && "_[o]" _in_ potUserReqOriging[_i]; _nameFound = 1
+			if "_[o]" _in_ potUserReqCategory[_i] && "_[o]" _in_ potUserReqElement[_i]; _nameFound = 1
 			else; _nameFound = 0
 
 			if potUserName[_i] == "" && bagPotions[_i] != 0; potUserName[_i] = "Potion Nr." + NoEmptyARRAYSIZE(potUserName)
@@ -574,7 +689,7 @@ OnBagPot : all
 
 			if bagPotions[_i] != 0
 			{
-				if Buttons[1] == "ON" && _nameFound == 1; "\![*]\__q[OnTakePot,%(_i)] Take %(potName[_i]) (%(bagPotions[_i]))\__q\n"
+				if Buttons[1] == "ON" && _nameFound == 1 || Buttons[7] == "ON" && potUsed[_i] == 1; "\![*]\__q[OnTakePot,%(_i)] Take %(potName[_i]) (%(bagPotions[_i]))\__q\n"
 				else; "\![*]\__q[OnTakePot,%(_i)] Take %(potUserName[_i]) (%(bagPotions[_i]))\__q\n"
 			}
 		}
