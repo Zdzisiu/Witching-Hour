@@ -2,9 +2,9 @@ Charset,UTF-8
 __system_settings_version__,2
 Char20.center,1272
 Char40.center,524
-Char19.center,1418
+Char19.center,251
 Char39.center,714
-Char17.center,89
+Char17.center,809
 Char37.center,1094
 balloon,F:\GitHub\Work-In-Progress\balloons\Simple Glitch\
 inputbox.left,840
@@ -14,9 +14,9 @@ Char38.center,904
 Char8.center,1664
 Char13.center,714
 Char33.center,334
-Char16.center,310
+Char16.center,1502
 Char36.center,1284
-scriptbox.left,826
+scriptbox.left,1162
 Char9.center,1474
 Char14.center,554
 Char34.center,1664
@@ -30,17 +30,18 @@ Char10.center,1284
 Char30.center,904
 Char29.center,1094
 Char49.center,334
+SurfaceTest.visible,1
 Char6.center,550
 Char11.center,1094
 Char31.center,714
 Char.VirtualDesktop,da4d6157-6dc5-4592-8e9b-e5945a1d4848
 Char28.center,1284
 Char48.center,524
-Char2.center,1216
+Char2.center,1040
 Char26.center,1664
 Char46.center,904
-scriptbox.top,366
-Char0.center,1563
+scriptbox.top,420
+Char0.center,1485
 shell,shell\master\
 FirstBoot,booted
 Char24.center,516
@@ -58,8 +59,8 @@ shell.ischanged.2,1
 Char21.center,1086
 Char41.center,334
 inputbox.top,505
-update.lastexec,737766436
+update.lastexec,738016403
 Char42.center,1664
-Char18.center,1325
+Char18.center,1568
 DeveloperPalette.visible,1
 __system_written_flag_do_not_remove__,written

@@ -52,18 +52,18 @@ surface0
 
 
 	animation1001.interval,never
-	animation1001.pattern1,overlay,900,150,0,-150
-	animation1001.pattern2,overlay,901,150,0,-150
-	animation1001.pattern3,overlay,902,150,0,-150
+	animation1001.pattern1,overlay,900,150,-100,-150
+	animation1001.pattern2,overlay,901,150,-100,-150
+	animation1001.pattern3,overlay,902,150,-100,-150
 
 	animation1002.interval,never
-	animation1002.pattern1,overlay,902,0,0,-150
+	animation1002.pattern1,overlay,902,0,-100,-150
 
 	animation1003.interval,never
-	animation1003.pattern1,overlay,903,0,0,-135
-	animation1003.pattern1,overlay,904,150,0,-135
-	animation1003.pattern1,overlay,905,150,0,-135
-	animation1003.pattern1,overlay,906,150,0,-135
+	animation1003.pattern1,overlay,903,0,-85,-40
+	animation1003.pattern1,overlay,904,150,-95,-35
+	animation1003.pattern1,overlay,905,150,-90,-68
+	animation1003.pattern1,overlay,906,150,-80,-57
 	animation1003.pattern1,start,1002
 	animation1003.pattern1,start,1003
 
