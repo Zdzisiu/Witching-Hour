@@ -15,3 +15,6 @@ Skeletons
 Blood
 Descriptions of gore
 Language that may not be suitable for your Christian minecraft server
+
+
+original idea by: Oswald
